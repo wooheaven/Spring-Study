@@ -2,8 +2,8 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.spring.example.lec03</groupId>
-    <artifactId>lec03</artifactId>
+    <groupId>com.spring.example.lec05</groupId>
+    <artifactId>lec05</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
