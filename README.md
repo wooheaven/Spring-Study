@@ -16,3 +16,8 @@ DI = Dependency Injection by xml and setters
 ```{text}
 DI = Dependency Injection by xml and setters
 ```
+
+## [Lec05 = DI](01_Spring_Workspace/lec05/src/main/java/com/spring/example/lec05/student/MainClass.java)
+```{text}
+DI = Dependency Injection by xml and setters and constuctor
+```
