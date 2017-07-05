@@ -21,3 +21,8 @@ DI = Dependency Injection by xml and setters
 ```{text}
 DI = Dependency Injection by xml and setters and constuctor
 ```
+
+## [Lec06 = DI](lec06/src/main/java/com/spring/example/lec06/ex1/MainClass.java)
+```{text}
+DI from Spring Container to Java Object as multiple xml, java class, xml(include java class), java class(include xml)
+```
