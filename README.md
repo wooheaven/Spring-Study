@@ -26,3 +26,10 @@ DI = Dependency Injection by xml and setters and constuctor
 ```{text}
 DI from Spring Container to Java Object as multiple xml, java class, xml(include java class), java class(include xml)
 ```
+
+## [Lec07 = Spring Container Life Cycle, Spring Bean Life Cycle, Spring Bean Scope](01_Spring_Workspace/lec07/src/main/java/com/spring/example/lec07/ex1/MainClass.java)
+```{text}
+Spring Container Life Cycle = generate -> configure -> use -> close
+Spring Bean Life Cycle = generate -> destroy (by implements InitializingBean, DisposableBean or Java Annotation @PostConstruct, @PreDestroy + annotation-config)
+Spring Bean Scope = singleton, prototype, etc
+```
