@@ -37,10 +37,7 @@ Spring Bean Scope = singleton, prototype, etc
 # Pro SpringBoot Workbook
 
 ## Chapter1 SpringBoot Introduction
-```{text}
-```
 
 ## Chapter2 SpringBoot First time develop
-```{text}
-[2.1_SpringBoot CLI Install](02_SpringBoot_Workspace/SpringBoot_App_FirstTime_develop/SpringBoot_CLI_Install/2.1.1_Unix/)
-```
+
+### [02.01_Installing_Spring_Boot_CLI](02_SpringBoot_Workspace/02_Chapter_Your_First_Spring_Boot_Application/02.01_Installing_Spring_Boot_CLI/02.01.01_Unix/01_by_brew_on_macOS.md)
