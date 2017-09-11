@@ -40,10 +40,10 @@ Spring Bean Scope = singleton, prototype, etc
 
 ## Chapter2 SpringBoot First time develop
 
-### [02.01 Installing Spring Boot CLI](02_SpringBoot_Workspace/02_Chapter_Your_First_Spring_Boot_Application/02.01_Installing_Spring_Boot_CLI/02.01.01_Unix/01_by_brew_on_macOS.md)
+### [02.01 Installing Spring Boot CLI](02_SpringBoot_Workspace/02_Chapter_Your_First_Spring_Boot_Application/02.01_Installing_Spring_Boot_CLI/)
 
 ### [02.02 Spring Boot with Maven and Gradle](02_SpringBoot_Workspace/02_Chapter_Your_First_Spring_Boot_Application/02.02_Spring_Boot_with_Maven_and_Gradle/02.02.01_mvn/01_mvn_build.md)
 
 ### [02.03 Spring Boot Using External Tools](02_SpringBoot_Workspace/02_Chapter_Your_First_Spring_Boot_Application/02.03_Spring_Boot_Using_External_Tools/02.03.03_Spring_Boot_Using_Spring_Tool_Suite/01_use_STS_new_project.md)
 
-### [02.04 Your First Spring Boot Application](02_SpringBoot_Workspace/02_Chapter_Your_First_Spring_Boot_Application/02.04_Your_First_Spring_Boot_Application/02.04.01_Spring_Boot_Journal/spring-boot-journal/src/main/java/com/apress/spring/SpringBootJournalApplication.java)
+### [02.04 Your First Spring Boot Application](02_SpringBoot_Workspace/02_Chapter_Your_First_Spring_Boot_Application/02.04_Your_First_Spring_Boot_Application/02.04.01_Spring_Boot_Journal/spring-boot-journal/)
