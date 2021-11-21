@@ -1,13 +1,3 @@
-| Lecture | Contents | Details
-|---|---|---|
-| [Inflearn Spring Study](01_Inflearn_Spring_Study/) | | |
-| | Lec02 | [DI, IOC](01_Inflearn_Spring_Study/lec02/) |
-| | Lec03 | [DI](01_Inflearn_Spring_Study/lec03/) |
-| | Lec04 | [DI](01_Inflearn_Spring_Study/lec04/) |
-| | Lec05 | [DI](01_Inflearn_Spring_Study/lec05/) |
-| | Lec06 | [DI](01_Inflearn_Spring_Study/lec06/) |
-| | Lec07 | [Spring Container Life Cycle, Spring Bean Life Cycle, Spring Bean Scope](01_Inflearn_Spring_Study/lec07/) |
-
 | Book | Contents | Details |
 |---|---|---|
 | [Pro SpringBoot Workbook](02_SpringBoot) | | |
