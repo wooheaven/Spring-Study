@@ -19,7 +19,9 @@
                 </thead>
                 <tr th:each="board : ${boards}">
                     <td th:text="${board.id}">1</td>
-                    <td th:text="${board.title}">MyTitle</td>
+                    <td>
+                        <a th:text="${board.title}" th:href="@{/board/form(id=${board.id})}">MyTitle</a>
+                    </td>
                     <td th:text="${board.content}">MyContent</td>
                 </tr>
             </table>

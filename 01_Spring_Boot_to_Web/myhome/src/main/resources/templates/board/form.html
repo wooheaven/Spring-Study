@@ -9,6 +9,7 @@
         <div class="container">
             <h2>게시판</h2>
             <form action="#" th:action="@{/board/form}" th:object="${board}" method="post">
+                <input type="hidden" th:field="*{id}">
                 <div class="form-group">
                     <label for="title">제목</label>
                     <input type="text" class="form-control" id="title" th:field="*{title}">
