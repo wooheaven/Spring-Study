@@ -13,7 +13,7 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotEmpty
-    @Size(min = 2, max = 10)
+    @Size(min = 3, max = 10, message = "제목의 길이는 3자 이상 10자 이하입니다.")
     private String title;
     @NotEmpty
     @Size(min = 2, max = 10)
