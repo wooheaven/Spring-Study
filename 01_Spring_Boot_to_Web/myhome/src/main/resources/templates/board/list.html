@@ -8,7 +8,7 @@
 
         <div class="container">
             <h2>게시판</h2>
-            <div>총 건수 : <span th:text="${#lists.size(boards)}">5</span></div>
+            <div>총 건수 : <span th:text="${boards.totalElements}">5</span></div>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -17,14 +17,36 @@
                         <th>Content</th>
                     </tr>
                 </thead>
-                <tr th:each="board : ${boards}">
-                    <td th:text="${board.id}">1</td>
-                    <td>
-                        <a th:text="${board.title}" th:href="@{/board/form(id=${board.id})}">MyTitle</a>
-                    </td>
-                    <td th:text="${board.content}">MyContent</td>
-                </tr>
+                <tbody>
+                    <tr th:each="board : ${boards}">
+                        <td th:text="${board.id}">1</td>
+                        <td>
+                            <a th:text="${board.title}" th:href="@{/board/form(id=${board.id})}">MyTitle</a>
+                        </td>
+                        <td th:text="${board.content}">MyContent</td>
+                    </tr>
+                </tbody>
             </table>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item"
+                        th:classappend="${ 0 == boards.pageable.pageNumber} ? 'disabled'">
+                        <a class="page-link"
+                           href="#" th:href="@{/board/list(page=${boards.pageable.pageNumber - 1},size=${size})}">Previous</a>
+                    </li>
+                    <li class="page-item"
+                        th:classappend="${i == boards.pageable.pageNumber + 1} ? 'disabled'"
+                        th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                        <a class="page-link"
+                           href="#" th:href="@{/board/list(page=${i - 1},size=${size})}" th:text="${i}"}>1</a>
+                    </li>
+                    <li class="page-item"
+                        th:classappend="${boards.pageable.pageNumber + 1 == boards.totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           href="#" th:href="@{/board/list(page=${boards.pageable.pageNumber + 1},size=${size})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
             <div class="text-right">
                 <a type="button" class="btn btn-primary" th:href="@{/board/form}">쓰기</a>
             </div>
