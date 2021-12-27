@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,8 +32,9 @@ public class BoardController {
     @GetMapping("/list")
     public String list(
             Model model,
-            @PageableDefault(page = 0, size = 5, sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<Board> boards = boardRepository.findAll(pageable);
+            @PageableDefault(page = 0, size = 5, sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false, defaultValue = "") String searchText) {
+        Page<Board> boards = boardRepository.findByTitleContainingOrContentContaining(pageable, searchText, searchText);
         int startPage = Math.max(boards.getPageable().getPageNumber() - 4, 1);
         int endPage = Math.min(boards.getTotalPages(), boards.getPageable().getPageNumber() + 4);
 
