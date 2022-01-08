@@ -32,7 +32,7 @@ public class BoardController {
     @GetMapping("/list")
     public String list(
             Model model,
-            @PageableDefault(page = 0, size = 5, sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(page = 0, size = 5, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false, defaultValue = "") String searchText) {
         Page<Board> boards = boardRepository.findByTitleContainingOrContentContaining(pageable, searchText, searchText);
         int startPage = Math.max(boards.getPageable().getPageNumber() - 4, 1);
