@@ -18,4 +18,8 @@ public class Board {
     @NotEmpty
     @Size(min = 2, max = 50)
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 }
