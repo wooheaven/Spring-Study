@@ -7,8 +7,6 @@ import com.example.myhome.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
-
 @Service
 public class BoardService {
     @Autowired
