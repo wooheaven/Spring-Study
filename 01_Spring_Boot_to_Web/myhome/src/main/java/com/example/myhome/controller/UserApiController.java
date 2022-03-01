@@ -1,5 +1,6 @@
 package com.example.myhome.controller;
 
+import com.example.myhome.model.Board;
 import com.example.myhome.model.User;
 import com.example.myhome.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,10 @@ public class UserApiController {
     User replace(@RequestBody User newUser, @PathVariable Long id) {
         return repository.findById(id)
             .map(user -> {
-//                user.setTitle(newUser.getTitle());
-//                user.setContent(newUser.getContent());
+                user.setBoards(newUser.getBoards());
+                for(Board board : user.getBoards()) {
+                    board.setUser(user);
+                }
                 return repository.save(user);
             })
             .orElseGet(() -> {
