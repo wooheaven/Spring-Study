@@ -7,10 +7,12 @@ spring:
     password: 123qwe
   jpa:
     database: POSTGRESQL
-    show-sql: true
     properties:
       hibernate:
         ddl-auto: update - 수정사항만 DB에 반영
         jdbc:
           lob:
             non_contextural: true
+        show_sql: true
+        format_sql: true
+#        use_sql_comments: true

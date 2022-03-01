@@ -34,7 +34,9 @@ public class UserApiController {
     User replace(@RequestBody User newUser, @PathVariable Long id) {
         return repository.findById(id)
             .map(user -> {
-                user.setBoards(newUser.getBoards());
+                user.getBoards().clear();
+                user.getBoards().addAll(newUser.getBoards());
+//                user.setBoards(newUser.getBoards());
                 for(Board board : user.getBoards()) {
                     board.setUser(user);
                 }
