@@ -11,4 +11,9 @@ public class MainController {
     public String index() {
         return "hello welcome to board";
     }
+    
+    @RequestMapping("/")
+    public String root() {
+        return "redirect:/question/list";
+    }
 }
