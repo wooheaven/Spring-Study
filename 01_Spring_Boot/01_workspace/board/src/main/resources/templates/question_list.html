@@ -1,14 +1,18 @@
 <table>
   <thead>
     <tr>
-      <th>제목</th>
+      <th>ID</th>
       <th>작성일시</th>
+      <th>제목</th>
     </tr>
   </thead>
   <tbody>
     <tr th:each="question : ${qList}">
-      <td th:text="${question.subject}"></td>
+      <td><a
+        th:href="@{|/question/detail/${question.id}|}"
+        th:text="${question.id}"> </a></td>
       <td th:text="${question.createTime}"></td>
+      <td th:text="${question.subject}"></td>
     </tr>
   </tbody>
 </table>

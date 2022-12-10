@@ -1,0 +1,22 @@
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <td th:text="${question.id}"></td>
+    </tr>
+    <tr>
+      <th>작성일시</th>
+      <td th:text="${question.createTime}"></td>
+    </tr>
+    <tr>
+      <th>제목</th>
+      <td th:text="${question.subject}"></td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>내용</th>
+      <td th:text="${question.content}"></td>
+    </tr>
+  </tbody>
+</table>
