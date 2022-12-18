@@ -5,7 +5,8 @@
 ║░║░╠═3 QustionList and Thymeleaf [QuestionController.java](01_Spring_Boot/01_workspace/board/src/main/java/com/mysite/board/controller/QuestionController.java)  
 ║░║░╠═4 Question Detail [QuestionController.java](01_Spring_Boot/01_workspace/board/src/main/java/com/mysite/board/controller/QuestionController.java)  
 ║░║░╠═5 Root URL and redirect [MainController.java](01_Spring_Boot/01_workspace/board/src/main/java/com/mysite/board/controller/MainController.java)  
-║░║░╚═6 Service [QuestionService.java](01_Spring_Boot/01_workspace/board/src/main/java/com/mysite/board/service/QuestionService.java)  
+║░║░╠═6 Service [QuestionService.java](01_Spring_Boot/01_workspace/board/src/main/java/com/mysite/board/service/QuestionService.java)  
+║░║░╚═7 Style [style.css](01_Spring_Boot/01_workspace/board/src/main/resources/static/style.css)  
 ║░╚═2 spring.io  
 ║░░░╠═1 Spring Quickstart Guide [Link Page](https://spring.io/quickstart), [Source Code](01_Spring_Boot/01_workspace/demo/src/main/java/com/example/demo/DemoApplication.java)  
 ║░░░╚═2 Spring Guides  
