@@ -17,13 +17,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Controller
 public class AnswerController {
-    private final AnswerService aService;
-    private final QuestionService qService;
+    private final AnswerService answerService;
+    private final QuestionService questionService;
 
     @PostMapping("/create/{id}")
     public String createAnswer(Model model, @PathVariable("id") Long id, @RequestParam String content) {
-        Question question = this.qService.getQuestion(id);
-        this.aService.create(question, content);
+        Question question = this.questionService.getQuestion(id);
+        this.answerService.create(question, content);
         return String.format("redirect:/question/detail/%s", id);
     }
 }
