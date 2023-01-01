@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.mysite.board.form.AnswerForm;
 import com.mysite.board.form.QuestionForm;
 import com.mysite.board.model.Question;
 import com.mysite.board.service.QuestionService;
@@ -25,15 +26,15 @@ import lombok.RequiredArgsConstructor;
 public class QuestionController {
     private final QuestionService questionService;
 
-    @RequestMapping("/list")
+    @GetMapping("/list")
     public String list(Model model) {
         List<Question> questionList = this.questionService.getQuestionList();
         model.addAttribute("questionList", questionList);
         return "question_list";
     }
 
-    @RequestMapping("/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Long id) {
+    @GetMapping("/detail/{id}")
+    public String detail(Model model, @PathVariable("id") Long id, AnswerForm answerForm) {
         Question q = this.questionService.getQuestion(id);
         model.addAttribute("question", q);
         return "question_detail";
