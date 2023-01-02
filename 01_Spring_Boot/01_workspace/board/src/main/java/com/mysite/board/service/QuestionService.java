@@ -1,9 +1,14 @@
 package com.mysite.board.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mysite.board.exception.DataNotFoundException;
@@ -18,8 +23,11 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
-    public List<Question> getQuestionList() {
-        return questionRepository.findAll();
+    public Page<Question> getQuestionList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createTime"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return questionRepository.findAll(pageable);
     }
 
     public Question getQuestion(Long id) {

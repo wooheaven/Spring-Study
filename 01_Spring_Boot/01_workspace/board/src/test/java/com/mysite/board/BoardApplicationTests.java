@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import com.mysite.board.model.Answer;
 import com.mysite.board.model.Question;
 import com.mysite.board.repository.AnswerRepository;
 import com.mysite.board.repository.QuestionRepository;
+import com.mysite.board.service.QuestionService;
 
 @SpringBootTest
 class BoardApplicationTests {
@@ -25,7 +27,11 @@ class BoardApplicationTests {
     @Autowired
     private AnswerRepository aRepo;
 
+    @Autowired
+    private QuestionService questionService;
+
     @Test
+    @Disabled
     void testJpa() {
 //        Inital Question
         List<Question> qList = this.qRepo.findAll();
@@ -92,11 +98,19 @@ class BoardApplicationTests {
 
     @Transactional
     @Test
+    @Disabled
     void testJpa2() {
         Optional<Question> qOptional = this.qRepo.findById(2L);
         Question q = qOptional.get();
         List<Answer> answerList = q.getAnswerList();
         assertEquals(1, answerList.size());
         assertEquals("네 자동생성됩니다", answerList.get(0).getContent());
+    }
+
+    @Test
+    void testJpa3() {
+        for (int i=1; i <= 300; i++) {
+            this.questionService.create(String.format("test data : [%03d]", i), "contents is empty");
+        }
     }
 }
