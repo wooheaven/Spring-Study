@@ -13,11 +13,10 @@ import com.mysite.board.model.Hello;
 public class HelloController {
     private static final String template = "Hello, %s";
     private final AtomicLong counter = new AtomicLong();
-    
+
     @RequestMapping("/hello")
     @ResponseBody
     public Hello hello(@RequestParam(value = "name", defaultValue = "World") String name) {
         return new Hello(counter.incrementAndGet(), String.format(template, name));
     }
-
 }
