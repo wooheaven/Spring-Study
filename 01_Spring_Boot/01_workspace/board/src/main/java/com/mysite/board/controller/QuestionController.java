@@ -1,11 +1,5 @@
 package com.mysite.board.controller;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.validation.Valid;
-
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +15,7 @@ import com.mysite.board.form.QuestionForm;
 import com.mysite.board.model.Question;
 import com.mysite.board.service.QuestionService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/question")

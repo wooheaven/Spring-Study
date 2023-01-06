@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,8 @@ import com.mysite.board.model.Question;
 import com.mysite.board.repository.AnswerRepository;
 import com.mysite.board.repository.QuestionRepository;
 import com.mysite.board.service.QuestionService;
+
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 class BoardApplicationTests {
@@ -109,7 +109,7 @@ class BoardApplicationTests {
 
     @Test
     void testJpa3() {
-        for (int i=1; i <= 300; i++) {
+        for (int i = 1; i <= 300; i++) {
             this.questionService.create(String.format("test data : [%03d]", i), "contents is empty");
         }
     }
