@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mysite.board.exception.DataNotFoundException;
+import com.mysite.board.model.BoardUser;
 import com.mysite.board.model.Question;
 import com.mysite.board.repository.QuestionRepository;
 
@@ -39,11 +40,12 @@ public class QuestionService {
         }
     }
 
-    public void create(String subject, String content) {
+    public void create(String subject, String content, BoardUser boardUser) {
         Question question = new Question();
         question.setSubject(subject);
         question.setContent(content);
         question.setCreateTime(LocalDateTime.now());
+        question.setAuthor(boardUser);
         this.questionRepository.save(question);
     }
 }

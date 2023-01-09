@@ -108,9 +108,10 @@ class BoardApplicationTests {
     }
 
     @Test
+    @Disabled
     void testJpa3() {
-        for (int i = 1; i <= 300; i++) {
-            this.questionService.create(String.format("test data : [%03d]", i), "contents is empty");
-        }
+//        for (int i = 1; i <= 300; i++) {
+//            this.questionService.create(String.format("test data : [%03d]", i), "contents is empty");
+//        }
     }
 }
