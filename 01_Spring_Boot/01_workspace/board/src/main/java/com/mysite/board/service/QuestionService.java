@@ -48,4 +48,11 @@ public class QuestionService {
         question.setAuthor(boardUser);
         this.questionRepository.save(question);
     }
+
+    public void modify(Question question, String subject, String content) {
+        question.setSubject(subject);
+        question.setContent(content);
+        question.setModifyTime(LocalDateTime.now());
+        this.questionRepository.save(question);
+    }
 }
