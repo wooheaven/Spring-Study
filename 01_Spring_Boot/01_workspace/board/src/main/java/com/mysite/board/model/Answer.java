@@ -21,7 +21,8 @@ import lombok.Setter;
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long a_id;
+    @Column(name = "a_id")
+    private Long id;
 
     @Column(columnDefinition = "TEXT", name = "a_content")
     private String content;
@@ -35,4 +36,5 @@ public class Answer {
     @ManyToOne
     private BoardUser author;
 
+    private LocalDateTime modifyTime;
 }
