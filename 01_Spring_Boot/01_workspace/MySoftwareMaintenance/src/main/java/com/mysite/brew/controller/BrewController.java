@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewUpdate;
 import com.mysite.brew.service.BrewService;
@@ -22,6 +23,19 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class BrewController {
     private final BrewService brewService;
+
+    @GetMapping("ls")
+    public String ls() throws IOException, InterruptedException {
+        brewService.ls();
+        return "redirect:/brew/lsList";
+    }
+
+    @GetMapping("lsList")
+    public String lsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewLs> paging = this.brewService.getBrewLsList(page);
+        model.addAttribute("paging", paging);
+        return "brew_ls_list";
+    }
 
     @GetMapping("update")
     public String update() throws AWTException, IOException, InterruptedException {

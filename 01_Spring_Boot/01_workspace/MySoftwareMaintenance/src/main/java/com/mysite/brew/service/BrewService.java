@@ -25,8 +25,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewUpdate;
+import com.mysite.brew.repository.BrewLsRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.StreamGobbler;
@@ -38,8 +40,56 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class BrewService {
     private final BrewUpdateRepository brewUpdateRepository;
-    private final MyRobot myRobot;
     private final BrewOutdatedRepository brewOutdatedRepository;
+    private final BrewLsRepository brewLsRepository;
+    private final MyRobot myRobot;
+
+    public void ls() throws IOException, InterruptedException {
+        // run ls
+        String path = "/home/linuxbrew/01_brew_ls.log";
+        lsRunByProcessBuilder(path);
+        File f = new File(path);
+        while (!f.exists()) {
+            System.out.println(path + " file is not existed. So Wait 1 second");
+            TimeUnit.SECONDS.sleep(1);
+        }
+
+        // read update from log file
+        String content = readFile(path);
+        if ("" != content) {
+            f.delete();
+        }
+
+        // write ls to table
+        LocalDateTime localDateTime = LocalDateTime.now();
+        BrewLs brewLs = null;
+        for (String line : content.split("\\r?\\n")) {
+            String[] items = line.split(" ");
+            if (items.length > 1) {
+                brewLs = new BrewLs();
+                brewLs.setCreateTime(localDateTime);
+                brewLs.setModifyTime(localDateTime);
+                brewLs.setPackageName(items[0]);
+                brewLs.setVersion(items[1]);
+                List<BrewLs> idList = this.brewLsRepository.findAllByPackageNameOrderById(brewLs.getPackageName());
+                if (idList.size() > 0) {
+                    brewLs.setId(idList.get(0).getId());
+                }
+                this.brewLsRepository.save(brewLs);
+            }
+        }
+    }
+
+    public Page<BrewLs> getBrewLsList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("id"));
+        Pageable pageable = PageRequest.of(page, 300, Sort.by(sorts));
+        return brewLsRepository.findAll(pageable);
+    }
+
+    private void lsRunByProcessBuilder(String path) throws IOException, InterruptedException {
+        RunByProcessBuilder(path.replaceFirst("log", "sh"));
+    }
 
     public void update() throws AWTException, IOException, InterruptedException {
         // run update
@@ -74,7 +124,7 @@ public class BrewService {
     }
 
     private void updateRunByProcessBuilder(String path) throws IOException, InterruptedException {
-        RunByProcessBuilder(path);
+        RunByProcessBuilder(path.replaceFirst("log", "sh"));
     }
 
     private void RunByProcessBuilder(String cmd) throws IOException, InterruptedException {
@@ -129,7 +179,7 @@ public class BrewService {
     }
 
     private void outdatedRunByProcessBuilder(String path) throws IOException, InterruptedException {
-        RunByProcessBuilder(path);
+        RunByProcessBuilder(path.replaceFirst("json", "sh"));
     }
 
     private JsonObject readJSON(String path) {
@@ -149,4 +199,5 @@ public class BrewService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return brewOutdatedRepository.findAll(pageable);
     }
+
 }
