@@ -43,8 +43,8 @@ public class BrewService {
 
     public void update() throws AWTException, IOException, InterruptedException {
         // run update
-        updateRunByProcessBuilder();
-        String path = "/home/linuxbrew/00_brew_update.log";
+        String path = "/home/linuxbrew/02_brew_update.log";
+        updateRunByProcessBuilder(path);
         File f = new File(path);
         while (!f.exists()) {
             System.out.println(path + " file is not existed. So Wait 1 second");
@@ -73,8 +73,8 @@ public class BrewService {
         return brewUpdateRepository.findAll(pageable);
     }
 
-    private void updateRunByProcessBuilder() throws IOException, InterruptedException {
-        RunByProcessBuilder("/home/linuxbrew/00_brew_update.sh");
+    private void updateRunByProcessBuilder(String path) throws IOException, InterruptedException {
+        RunByProcessBuilder(path);
     }
 
     private void RunByProcessBuilder(String cmd) throws IOException, InterruptedException {
@@ -103,8 +103,8 @@ public class BrewService {
 
     public void outdated() throws Exception {
         // run outdated
-        outdatedRunByProcessBuilder();
-        String path = "/home/linuxbrew/01_brew_outdated.json";
+        String path = "/home/linuxbrew/03_brew_outdated.json";
+        outdatedRunByProcessBuilder(path);
         File f = new File(path);
         while (!f.exists()) {
             System.out.println(path + " file is not existed. So Wait 1 second");
@@ -113,7 +113,7 @@ public class BrewService {
 
         // read outdated from json file
         BrewOutdated brewOutdated = new BrewOutdated();
-        JsonObject jsonObject = readJSON("/home/linuxbrew/01_brew_outdated.json");
+        JsonObject jsonObject = readJSON(path);
         if (null != jsonObject) {
             f.delete();
         }
@@ -128,8 +128,8 @@ public class BrewService {
         this.brewOutdatedRepository.save(brewOutdated);
     }
 
-    private void outdatedRunByProcessBuilder() throws IOException, InterruptedException {
-        RunByProcessBuilder("/home/linuxbrew/01_brew_outdated.sh");
+    private void outdatedRunByProcessBuilder(String path) throws IOException, InterruptedException {
+        RunByProcessBuilder(path);
     }
 
     private JsonObject readJSON(String path) {
