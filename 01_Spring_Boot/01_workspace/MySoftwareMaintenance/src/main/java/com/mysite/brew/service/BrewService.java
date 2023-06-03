@@ -118,10 +118,8 @@ public class BrewService {
             f.delete();
         }
         JsonArray formulae = (JsonArray) jsonObject.get("formulae");
-        JsonArray casks = (JsonArray) jsonObject.get("casks");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         brewOutdated.getProperties().put("formulae", gson.toJson(formulae));
-        brewOutdated.getProperties().put("casks", gson.toJson(casks));
         LocalDateTime localDateTime = LocalDateTime.now();
         brewOutdated.setCreateTime(localDateTime);
         brewOutdated.setModifyTime(localDateTime);
