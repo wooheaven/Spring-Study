@@ -5,10 +5,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,21 +42,23 @@ public class BrewService {
     private final BrewOutdatedRepository brewOutdatedRepository;
 
     public void update() throws AWTException, IOException, InterruptedException {
-        // update run
+        // run update
         updateRunByProcessBuilder();
-//        updateRunByRobot();
-
-        // update log from file
-        BrewUpdate brewUpdate = new BrewUpdate();
         String path = "/home/linuxbrew/00_brew_update.log";
         File f = new File(path);
         while (!f.exists()) {
             System.out.println(path + " file is not existed. So Wait 1 second");
             TimeUnit.SECONDS.sleep(1);
         }
-        String content = readFile(path);
 
-        // update log to table
+        // read update from log file
+        BrewUpdate brewUpdate = new BrewUpdate();
+        String content = readFile(path);
+        if ("" != content) {
+            f.delete();
+        }
+
+        // write update to table
         brewUpdate.setContent(content);
         LocalDateTime localDateTime = LocalDateTime.now();
         brewUpdate.setCreateTime(localDateTime);
@@ -95,12 +95,6 @@ public class BrewService {
         System.out.println(exitCode + " = exitCode : 0 is normal termination");
     }
 
-    private void updateRunByRobot() {
-        myRobot.openTerminal(100, "cd /home/linuxbrew");
-        myRobot.keyboardPressRelease(1000, "./00_brew_update.sh");
-        myRobot.goToFireFox(1000);
-    }
-
     private String readFile(String path) throws IOException {
         Path filePath = Path.of(path);
         String content = Files.readString(filePath);
@@ -108,13 +102,21 @@ public class BrewService {
     }
 
     public void outdated() throws Exception {
-        // outdated run
+        // run outdated
         outdatedRunByProcessBuilder();
-//        outdatedRunByRobot();
+        String path = "/home/linuxbrew/01_brew_outdated.json";
+        File f = new File(path);
+        while (!f.exists()) {
+            System.out.println(path + " file is not existed. So Wait 1 second");
+            TimeUnit.SECONDS.sleep(1);
+        }
 
-        // outdated log from json file
+        // read outdated from json file
         BrewOutdated brewOutdated = new BrewOutdated();
         JsonObject jsonObject = readJSON("/home/linuxbrew/01_brew_outdated.json");
+        if (null != jsonObject) {
+            f.delete();
+        }
         JsonArray formulae = (JsonArray) jsonObject.get("formulae");
         JsonArray casks = (JsonArray) jsonObject.get("casks");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -124,7 +126,7 @@ public class BrewService {
         brewOutdated.setCreateTime(localDateTime);
         brewOutdated.setModifyTime(localDateTime);
 
-        // outdated log to table
+        // write outdated to table
         this.brewOutdatedRepository.save(brewOutdated);
     }
 
@@ -132,15 +134,9 @@ public class BrewService {
         RunByProcessBuilder("/home/linuxbrew/01_brew_outdated.sh");
     }
 
-    private void outdatedRunByRobot() {
-        myRobot.openTerminal(100, "cd /home/linuxbrew");
-        myRobot.keyboardPressRelease(1000, "./01_brew_outdated.sh");
-        myRobot.goToFireFox(1000);
-    }
-
     private JsonObject readJSON(String path) {
         JsonObject jsonObject = null;
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             Gson gson = new Gson();
             jsonObject = gson.fromJson(reader, JsonObject.class);
         } catch (Exception e) {
