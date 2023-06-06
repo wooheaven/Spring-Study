@@ -70,7 +70,7 @@ public class BrewService {
                 brewLs.setCreateTime(localDateTime);
                 brewLs.setModifyTime(localDateTime);
                 brewLs.setPackageName(items[0]);
-                brewLs.setVersion(items[1]);
+                brewLs.setInstalled_version(items[1]);
                 List<BrewLs> idList = this.brewLsRepository.findAllByPackageNameOrderById(brewLs.getPackageName());
                 if (idList.size() > 0) {
                     brewLs.setId(idList.get(0).getId());
@@ -88,7 +88,8 @@ public class BrewService {
     }
 
     private void lsRunByProcessBuilder(String path) throws IOException, InterruptedException {
-        RunByProcessBuilder(path.replaceFirst("log", "sh"));
+        String command = path.replaceFirst("log", "sh");
+        brewCommandRunByProcessBuilder(command);
     }
 
     public void update() throws AWTException, IOException, InterruptedException {
@@ -124,14 +125,16 @@ public class BrewService {
     }
 
     private void updateRunByProcessBuilder(String path) throws IOException, InterruptedException {
-        RunByProcessBuilder(path.replaceFirst("log", "sh"));
+        String command = path.replaceFirst("log", "sh");
+        brewCommandRunByProcessBuilder(command);
     }
 
-    private void RunByProcessBuilder(String cmd) throws IOException, InterruptedException {
+    private void runByProcessBuilder(String workingDirectory, String command) throws IOException, InterruptedException {
         boolean isLinux = System.getProperty("os.name").toLowerCase().startsWith("linux");
         ProcessBuilder builder = new ProcessBuilder();
         if (isLinux) {
-            builder.command("/bin/bash", "-c", "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\" && " + cmd);
+            String fullCommand = " && " + "cd " + workingDirectory + " && " + command;
+            builder.command("/bin/bash", "-c", "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"" + fullCommand);
         } else {
             builder.command("cmd.exe", "/c", "dir");
         }
@@ -143,6 +146,10 @@ public class BrewService {
 
         int exitCode = process.waitFor(); /* 0 is normal termination */
         System.out.println(exitCode + " = exitCode : 0 is normal termination");
+    }
+
+    private void brewCommandRunByProcessBuilder(String command) throws IOException, InterruptedException {
+        runByProcessBuilder("/home/linuxbrew/", command);
     }
 
     private String readFile(String path) throws IOException {
@@ -179,7 +186,8 @@ public class BrewService {
     }
 
     private void outdatedRunByProcessBuilder(String path) throws IOException, InterruptedException {
-        RunByProcessBuilder(path.replaceFirst("json", "sh"));
+        String command = path.replaceFirst("json", "sh");
+        brewCommandRunByProcessBuilder(command);
     }
 
     private JsonObject readJSON(String path) {
@@ -198,6 +206,11 @@ public class BrewService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return brewOutdatedRepository.findAll(pageable);
+    }
+
+    public void db() throws IOException, InterruptedException {
+        String command = "/home/woo/02_Documents/50_Local_PostgreSQL_WorkSpace/04_pg15.1-Container_start.sh";
+        brewCommandRunByProcessBuilder(command);
     }
 
 }

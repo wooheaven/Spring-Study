@@ -6,8 +6,10 @@
         <th style="text-align:left; width:4%">번호</th>
         <th style="text-align:left; width:13%">createTime</th>
         <th style="text-align:left; width:13%">modifyTime</th>
-        <th style="text-align:left; width:35%">package</th>
-        <th style="text-align:left; width:35%">version</th>
+        <th style="text-align:left; width:10%">package</th>
+        <th style="text-align:left; width:10%">installed_version</th>
+        <th style="text-align:left; width:10%">current_version</th>
+        <th style="text-align:left; width:5%">pinned</th>
       </tr>
     </thead>
     <tbody>
@@ -16,7 +18,9 @@
         <td style="text-align:left" th:text="${#temporals.format(brew_ls.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
         <td style="text-align:left" th:text="${#temporals.format(brew_ls.modifyTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
         <td style="text-align:left;white-space: pre-line" th:text="${brew_ls.packageName}"></td>
-        <td style="text-align:left;white-space: pre-line" th:text="${brew_ls.version}"></td>
+        <td style="text-align:left;white-space: pre-line" th:text="${brew_ls.installed_version}"></td>
+        <td style="text-align:left;white-space: pre-line" th:text="${brew_ls.current_version}"></td>
+        <td style="text-align:left;white-space: pre-line" th:text="${brew_ls.pinned}"></td>
       </tr>
     </tbody>
   </table>
