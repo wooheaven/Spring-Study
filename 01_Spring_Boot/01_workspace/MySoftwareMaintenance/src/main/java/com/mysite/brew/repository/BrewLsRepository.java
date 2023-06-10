@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.mysite.brew.model.BrewLs;
 
-public interface BrewLsRepository extends JpaRepository<BrewLs, Long>{
+public interface BrewLsRepository extends JpaRepository<BrewLs, Long> {
 
-   List<BrewLs> findAllByPackageNameOrderById(String packageName);
+    List<BrewLs> findAllByPackageNameOrderById(String packageName);
+
+    BrewLs findByPackageName(String myName);
 
 }

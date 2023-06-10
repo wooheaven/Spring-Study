@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
@@ -70,7 +72,7 @@ public class BrewService {
                 brewLs.setCreateTime(localDateTime);
                 brewLs.setModifyTime(localDateTime);
                 brewLs.setPackageName(items[0]);
-                brewLs.setInstalled_version(items[1]);
+                brewLs.setInstalledVersion(items[1]);
                 List<BrewLs> idList = this.brewLsRepository.findAllByPackageNameOrderById(brewLs.getPackageName());
                 if (idList.size() > 0) {
                     brewLs.setId(idList.get(0).getId());
@@ -81,10 +83,28 @@ public class BrewService {
     }
 
     public Page<BrewLs> getBrewLsList(int page) {
+        BrewOutdated brewOutdated = brewOutdatedRepository.findFirstByOrderByIdDesc();
+        Gson gson = new GsonBuilder().create();
+        Map<String, String> myProperties = brewOutdated.getProperties();
+        String myValueString = myProperties.get("formulae");
+        JsonArray myValueJsonArray = gson.fromJson(myValueString, JsonArray.class);
+        for (JsonElement myJson : myValueJsonArray) {
+            JsonObject myJsonObject = myJson.getAsJsonObject();
+            String myName = myJsonObject.get("name").getAsString();
+            String myInstalledVersion = gson.toJson(myJsonObject.get("installed_versions").getAsJsonArray().get(0));
+            String myCurrentVersion = myJsonObject.get("current_version").getAsString();
+            String myPinned = myJsonObject.get("pinned").getAsString();
+            BrewLs myBrewLs = brewLsRepository.findByPackageName(myName);
+            myBrewLs.setPackageName(myName);
+            myBrewLs.setCurrentVersion(myCurrentVersion);
+            brewLsRepository.save(myBrewLs);
+        }
+
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.asc("id"));
-        Pageable pageable = PageRequest.of(page, 300, Sort.by(sorts));
-        return brewLsRepository.findAll(pageable);
+        Pageable pageable = PageRequest.of(page, 300, Sort.by("currentVersion").ascending().and(Sort.by(sorts)));
+        Page<BrewLs> result = brewLsRepository.findAll(pageable);
+        return result;
     }
 
     private void lsRunByProcessBuilder(String path) throws IOException, InterruptedException {
@@ -134,7 +154,8 @@ public class BrewService {
         ProcessBuilder builder = new ProcessBuilder();
         if (isLinux) {
             String fullCommand = " && " + "cd " + workingDirectory + " && " + command;
-            builder.command("/bin/bash", "-c", "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"" + fullCommand);
+            builder.command("/bin/bash", "-c",
+                    "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"" + fullCommand);
         } else {
             builder.command("cmd.exe", "/c", "dir");
         }
@@ -175,8 +196,10 @@ public class BrewService {
             f.delete();
         }
         JsonArray formulae = (JsonArray) jsonObject.get("formulae");
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        brewOutdated.getProperties().put("formulae", gson.toJson(formulae));
+        Gson gson = new GsonBuilder().create();
+        String formulaeString = formulae.toString();
+        formulaeString = gson.toJson(formulae);
+        brewOutdated.getProperties().put("formulae", formulaeString);
         LocalDateTime localDateTime = LocalDateTime.now();
         brewOutdated.setCreateTime(localDateTime);
         brewOutdated.setModifyTime(localDateTime);
@@ -205,7 +228,8 @@ public class BrewService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return brewOutdatedRepository.findAll(pageable);
+        Page<BrewOutdated> result = brewOutdatedRepository.findAll(pageable);
+        return result;
     }
 
     public void db() throws IOException, InterruptedException {
@@ -213,4 +237,13 @@ public class BrewService {
         brewCommandRunByProcessBuilder(command);
     }
 
+    public void upgrade(String name) throws IOException, InterruptedException {
+        String command = String.format("brew upgrade %s", name);
+        brewCommandRunByProcessBuilder(command);
+    }
+
+    public void cleanup() throws IOException, InterruptedException {
+        String command = "brew cleanup";
+        brewCommandRunByProcessBuilder(command);
+    }
 }

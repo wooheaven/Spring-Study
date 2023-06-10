@@ -36,10 +36,10 @@ public class BrewLs {
     private String packageName;
 
     @Column
-    private String installed_version;
+    private String installedVersion;
 
     @Column
-    private String current_version;
+    private String currentVersion;
 
     @Column
     private String pinned;

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -107,13 +108,15 @@ public class BrewController {
     }
 
     @GetMapping("cleanup")
-    public String cleanup() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100, "cd /home/linuxbrew");
-//        myRobot.openTerminal(100);
-//        myRobot.keyboardPressRelease(1000, "cd /home/linuxbrew");
-        myRobot.keyboardPressRelease(1000, "brew cleanup");
-        myRobot.goToFireFox(1000);
+    public String cleanup() throws IOException, InterruptedException {
+        brewService.cleanup();
+        return "redirect:/";
+    }
+
+    @GetMapping("/upgrade/{name}")
+    public String upgrade(@PathVariable("name") String name) throws IOException, InterruptedException {
+        System.out.println(String.format("brew upgrade %s", name));
+        brewService.upgrade(name);
         return "redirect:/";
     }
 }

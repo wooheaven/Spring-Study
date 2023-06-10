@@ -6,4 +6,6 @@ import com.mysite.brew.model.BrewOutdated;
 
 public interface BrewOutdatedRepository extends JpaRepository<BrewOutdated, Long>{
 
+    BrewOutdated findFirstByOrderByIdDesc();
+
 }
