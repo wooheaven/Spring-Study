@@ -100,10 +100,8 @@ public class BrewService {
             brewLsRepository.save(myBrewLs);
         }
 
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.asc("id"));
-        Pageable pageable = PageRequest.of(page, 300, Sort.by("currentVersion").ascending().and(Sort.by(sorts)));
-        Page<BrewLs> result = brewLsRepository.findAll(pageable);
+        Pageable pageable = PageRequest.of(page, 300);
+        Page<BrewLs> result = brewLsRepository.findAllOrderByCustomWithPagination(pageable);
         return result;
     }
 
