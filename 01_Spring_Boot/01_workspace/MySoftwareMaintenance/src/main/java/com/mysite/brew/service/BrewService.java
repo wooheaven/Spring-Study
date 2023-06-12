@@ -100,7 +100,7 @@ public class BrewService {
             brewLsRepository.save(myBrewLs);
         }
 
-        Pageable pageable = PageRequest.of(page, 300);
+        Pageable pageable = PageRequest.of(page, 10);
         Page<BrewLs> result = brewLsRepository.findAllOrderByCustomWithPagination(pageable);
         return result;
     }

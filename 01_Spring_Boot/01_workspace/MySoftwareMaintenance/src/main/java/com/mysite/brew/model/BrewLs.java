@@ -43,4 +43,7 @@ public class BrewLs {
 
     @Column
     private String pinned;
+
+    @Column
+    private Long sortNumber;
 }
