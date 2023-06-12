@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -88,20 +89,36 @@ public class BrewService {
         Map<String, String> myProperties = brewOutdated.getProperties();
         String myValueString = myProperties.get("formulae");
         JsonArray myValueJsonArray = gson.fromJson(myValueString, JsonArray.class);
-        for (JsonElement myJson : myValueJsonArray) {
-            JsonObject myJsonObject = myJson.getAsJsonObject();
-            String myName = myJsonObject.get("name").getAsString();
-            String myInstalledVersion = gson.toJson(myJsonObject.get("installed_versions").getAsJsonArray().get(0));
-            String myCurrentVersion = myJsonObject.get("current_version").getAsString();
-            String myPinned = myJsonObject.get("pinned").getAsString();
-            BrewLs myBrewLs = brewLsRepository.findByPackageName(myName);
-            myBrewLs.setPackageName(myName);
-            myBrewLs.setCurrentVersion(myCurrentVersion);
-            brewLsRepository.save(myBrewLs);
+        if (myValueJsonArray.size() > 0) {
+            for (JsonElement myJson : myValueJsonArray) {
+                JsonObject myJsonObject = myJson.getAsJsonObject();
+                String myName = myJsonObject.get("name").getAsString();
+                String myInstalledVersion = gson.toJson(myJsonObject.get("installed_versions").getAsJsonArray().get(0));
+                String myCurrentVersion = myJsonObject.get("current_version").getAsString();
+                String myPinned = myJsonObject.get("pinned").getAsString();
+                BrewLs myBrewLs = brewLsRepository.findByPackageName(myName);
+                myBrewLs.setPackageName(myName);
+                myBrewLs.setCurrentVersion(myCurrentVersion);
+                brewLsRepository.save(myBrewLs);
+            }
         }
 
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<BrewLs> result = brewLsRepository.findAllOrderByCustomWithPagination(pageable);
+        List<Map<String, Long>> idMapToSortNumber = brewLsRepository.findIdSortNumberByCustom();
+        if (idMapToSortNumber.size() > 0) {
+            for (Map<String, Long> myMap : idMapToSortNumber) {
+                Long myId = myMap.get("brew_ls_id");
+                Optional<BrewLs> myBrewLs = brewLsRepository.findById(myId);
+                if (myBrewLs.isPresent()) {
+                    Long mySortNumberLong = myMap.get("sort_number");
+                    myBrewLs.get().setSortNumber(mySortNumberLong);
+                    brewLsRepository.save(myBrewLs.get());
+                }
+            }
+        }
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("sortNumber"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Page<BrewLs> result = brewLsRepository.findAll(pageable);
         return result;
     }
 
