@@ -35,7 +35,6 @@ import com.mysite.brew.repository.BrewLsRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.StreamGobbler;
-import com.mysite.robot.MyRobot;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +44,6 @@ public class BrewService {
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewLsRepository brewLsRepository;
-    private final MyRobot myRobot;
 
     public void ls() throws IOException, InterruptedException {
         // run ls
