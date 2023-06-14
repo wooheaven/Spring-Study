@@ -1,9 +1,5 @@
 package com.mysite.brew.model;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,18 +13,11 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(schema = "public", name = "brew_update")
-public class BrewUpdate {
+public class BrewUpdate extends CommonLocalDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "brew_update_id")
     private Long id;
-
-    @CreatedDate
-    @Column(name = "created_time")
-    private LocalDateTime createTime;
-
-    @Column(name = "modified_time")
-    private LocalDateTime modifyTime;
 
     @Column(columnDefinition = "TEXT")
     private String content;

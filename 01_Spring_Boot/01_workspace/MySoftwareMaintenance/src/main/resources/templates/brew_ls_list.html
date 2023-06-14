@@ -4,8 +4,8 @@
     <thead class="table-dark">
       <tr class="text-center">
         <th style="text-align:left; width:4%">번호</th>
-        <th style="text-align:left; width:13%">createTime</th>
-        <th style="text-align:left; width:13%">modifyTime</th>
+        <th style="text-align:left; width:13%">createdDate</th>
+        <th style="text-align:left; width:13%">lastModifiedDate</th>
         <th style="text-align:left; width:10%">package</th>
         <th style="text-align:left; width:10%">installed_version</th>
         <th style="text-align:left; width:10%">current_version</th>
@@ -15,8 +15,8 @@
     <tbody>
       <tr class="text-center" th:each="brew_ls, loop : ${paging}">
         <td style="text-align:left" th:text="${loop.index + 1}"></td>
-        <td style="text-align:left" th:text="${#temporals.format(brew_ls.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td style="text-align:left" th:text="${#temporals.format(brew_ls.modifyTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td style="text-align:left" th:text="${#temporals.format(brew_ls.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td style="text-align:left" th:text="${#temporals.format(brew_ls.lastModifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
         <td style="text-align:left"><a th:href="@{/brew/upgrade/{name}(name = ${brew_ls.packageName})}" th:text="${brew_ls.packageName}"/></td>
         <td style="text-align:left;white-space: pre-line" th:text="${brew_ls.installedVersion}"></td>
         <td style="text-align:left;white-space: pre-line" th:text="${brew_ls.currentVersion}"></td>

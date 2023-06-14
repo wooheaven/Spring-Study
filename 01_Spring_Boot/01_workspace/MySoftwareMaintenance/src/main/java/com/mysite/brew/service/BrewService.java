@@ -62,14 +62,11 @@ public class BrewService {
         }
 
         // write ls to table
-        LocalDateTime localDateTime = LocalDateTime.now();
         BrewLs brewLs = null;
         for (String line : content.split("\\r?\\n")) {
             String[] items = line.split(" ");
             if (items.length > 1) {
                 brewLs = new BrewLs();
-                brewLs.setCreateTime(localDateTime);
-                brewLs.setModifyTime(localDateTime);
                 brewLs.setPackageName(items[0]);
                 brewLs.setInstalledVersion(items[1]);
                 List<BrewLs> idList = this.brewLsRepository.findAllByPackageNameOrderById(brewLs.getPackageName());
@@ -144,9 +141,6 @@ public class BrewService {
 
         // write update to table
         brewUpdate.setContent(content);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        brewUpdate.setCreateTime(localDateTime);
-        brewUpdate.setModifyTime(localDateTime);
         this.brewUpdateRepository.save(brewUpdate);
     }
 
@@ -214,8 +208,6 @@ public class BrewService {
         formulaeString = gson.toJson(formulae);
         brewOutdated.getProperties().put("formulae", formulaeString);
         LocalDateTime localDateTime = LocalDateTime.now();
-        brewOutdated.setCreateTime(localDateTime);
-        brewOutdated.setModifyTime(localDateTime);
 
         // write outdated to table
         this.brewOutdatedRepository.save(brewOutdated);
