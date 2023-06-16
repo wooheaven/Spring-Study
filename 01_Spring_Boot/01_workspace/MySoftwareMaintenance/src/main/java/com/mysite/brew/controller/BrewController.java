@@ -2,6 +2,7 @@ package com.mysite.brew.controller;
 
 import java.awt.AWTException;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -25,21 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class BrewController {
     private final BrewService brewService;
 
-    @GetMapping("ls")
-    public String ls() throws IOException, InterruptedException {
-        brewService.ls();
-        return "redirect:/brew/lsList";
-    }
-
-    @GetMapping("lsList")
-    public String lsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-        Page<BrewLs> paging = this.brewService.getBrewLsList(page);
-        model.addAttribute("paging", paging);
-        return "brew_ls_list";
-    }
-
     @GetMapping("update")
-    public String update() throws AWTException, IOException, InterruptedException {
+    public String update() throws AWTException, IOException, InterruptedException, ExecutionException {
         brewService.update();
         return "redirect:/brew/updateList";
     }
@@ -62,6 +50,19 @@ public class BrewController {
         Page<BrewOutdated> paging = this.brewService.getBrewOutdatedList(page);
         model.addAttribute("paging", paging);
         return "brew_outdated_list";
+    }
+
+    @GetMapping("ls")
+    public String ls() throws IOException, InterruptedException, ExecutionException {
+        brewService.ls();
+        return "redirect:/brew/lsList";
+    }
+
+    @GetMapping("lsList")
+    public String lsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewLs> paging = this.brewService.getBrewLsList(page);
+        model.addAttribute("paging", paging);
+        return "brew_ls_list";
     }
 
     @GetMapping("tail")
@@ -108,13 +109,13 @@ public class BrewController {
     }
 
     @GetMapping("cleanup")
-    public String cleanup() throws IOException, InterruptedException {
+    public String cleanup() throws IOException, InterruptedException, ExecutionException {
         brewService.cleanup();
         return "redirect:/";
     }
 
     @GetMapping("/upgrade/{name}")
-    public String upgrade(@PathVariable("name") String name) throws IOException, InterruptedException {
+    public String upgrade(@PathVariable("name") String name) throws IOException, InterruptedException, ExecutionException {
         System.out.println(String.format("brew upgrade %s", name));
         brewService.upgrade(name);
         return "redirect:/";

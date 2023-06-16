@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.mysite.brew.shell.StreamGobble;
+import com.mysite.brew.shell.TerminalStreamRunnable;
 
 public class Tmp {
 
@@ -30,7 +30,7 @@ public class Tmp {
         }
         builder.directory(new File("/home/linuxbrew"));
         Process process = builder.start();
-        StreamGobble streamGobble = new StreamGobble(process.getInputStream(), System.out::println);
+        TerminalStreamRunnable streamGobble = new TerminalStreamRunnable(process.getInputStream(), System.out::println);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Future<?> future = executorService.submit(streamGobble);
 
