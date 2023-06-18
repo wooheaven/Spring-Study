@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
+import com.mysite.brew.model.BrewOutdatedPivot;
 import com.mysite.brew.model.BrewUpdate;
 import com.mysite.brew.service.BrewService;
 import com.mysite.robot.MyRobot;
@@ -50,6 +51,19 @@ public class BrewController {
         Page<BrewOutdated> paging = this.brewService.getBrewOutdatedList(page);
         model.addAttribute("paging", paging);
         return "brew_outdated_list";
+    }
+
+    @GetMapping("outdatedPivot")
+    public String outdatedPivot() throws Exception {
+        brewService.outdatedPivot();
+        return "redirect:/brew/outdatedPivotList";
+    }
+
+    @GetMapping("outdatedPivotList")
+    public String outdatedPivotList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewOutdatedPivot> paging = this.brewService.getBrewOutdatedPivotList(page);
+        model.addAttribute("paging", paging);
+        return "brew_outdated_pivot_list";
     }
 
     @GetMapping("ls")
@@ -115,7 +129,8 @@ public class BrewController {
     }
 
     @GetMapping("/upgrade/{name}")
-    public String upgrade(@PathVariable("name") String name) throws IOException, InterruptedException, ExecutionException {
+    public String upgrade(@PathVariable("name") String name)
+            throws IOException, InterruptedException, ExecutionException {
         System.out.println(String.format("brew upgrade %s", name));
         brewService.upgrade(name);
         return "redirect:/";

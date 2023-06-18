@@ -26,12 +26,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
+import com.mysite.brew.model.BrewOutdatedPivot;
 import com.mysite.brew.model.BrewUpdate;
 import com.mysite.brew.repository.BrewLsRepository;
+import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.TerminalStreamCallable;
 
+import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 public class BrewService {
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
+    private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     private final BrewLsRepository brewLsRepository;
 
     public void ls() throws IOException, InterruptedException, ExecutionException {
@@ -107,7 +111,8 @@ public class BrewService {
         return result;
     }
 
-    private List<String> lsRunByProcessBuilder(String command) throws IOException, InterruptedException, ExecutionException {
+    private List<String> lsRunByProcessBuilder(String command)
+            throws IOException, InterruptedException, ExecutionException {
         return brewCommandRunByProcessBuilder(command);
     }
 
@@ -138,7 +143,7 @@ public class BrewService {
         return brewUpdateRepository.findAll(pageable);
     }
 
-    private List<String> updateRunByProcessBuilder(String command) 
+    private List<String> updateRunByProcessBuilder(String command)
             throws IOException, InterruptedException, ExecutionException {
         return brewCommandRunByProcessBuilder(command);
     }
@@ -189,7 +194,7 @@ public class BrewService {
             }
         }
         content = content.replaceAll("conten\n$", "");
-        JsonObject jsonObject = readJSON(content);
+        JsonObject jsonObject = (JsonObject) readJSON(content);
         JsonArray formulae = (JsonArray) jsonObject.get("formulae");
         Gson gson = new GsonBuilder().create();
         String formulaeString = gson.toJson(formulae);
@@ -199,13 +204,21 @@ public class BrewService {
         this.brewOutdatedRepository.save(brewOutdated);
     }
 
-    private List<String> outdatedRunByProcessBuilder(String command) throws IOException, InterruptedException, ExecutionException {
+    private List<String> outdatedRunByProcessBuilder(String command)
+            throws IOException, InterruptedException, ExecutionException {
         return brewCommandRunByProcessBuilder(command);
     }
 
-    private JsonObject readJSON(String path) {
-        JsonObject jsonObject = new JsonParser().parse(path).getAsJsonObject();
-        return jsonObject;
+    private Object readJSON(String path) {
+        Object result = null;
+        if (path.charAt(0) == '{') {
+            JsonObject jsonObject = new JsonParser().parse(path).getAsJsonObject();
+            result = jsonObject;
+        } else if (path.charAt(0) == '[') {
+            JsonArray jsonArray = new JsonParser().parse(path).getAsJsonArray();
+            result = jsonArray;
+        }
+        return result;
     }
 
     public Page<BrewOutdated> getBrewOutdatedList(int page) {
@@ -224,5 +237,35 @@ public class BrewService {
     public void cleanup() throws IOException, InterruptedException, ExecutionException {
         String command = "/home/linuxbrew/.linuxbrew/bin/brew cleanup";
         brewCommandRunByProcessBuilder(command);
+    }
+
+    public void outdatedPivot() {
+        List<BrewOutdated> brewOutdatedList = this.brewOutdatedRepository.findAll();
+        for (BrewOutdated myBrewOutdated : brewOutdatedList) {
+            Map<String, String> myProperties = myBrewOutdated.getProperties();
+            String myContent = myProperties.get("formulae");
+            JsonArray jsonArray = (JsonArray) readJSON(myContent);
+            jsonArray.forEach(myJson -> {
+                System.out.println(myJson);
+                String myName = myJson.getAsJsonObject().get("name").getAsString();
+                String myInstalledVersion = myJson.getAsJsonObject().get("installed_versions").getAsString();
+                String myCurrentVersion = myJson.getAsJsonObject().get("current_version").getAsString();
+                Boolean myPinned = myJson.getAsJsonObject().get("pinned").getAsBoolean();
+                BrewOutdatedPivot brewOutdatedPivot = new BrewOutdatedPivot();
+                brewOutdatedPivot.setName(myName);
+                brewOutdatedPivot.setInstalledVersion(myInstalledVersion);
+                brewOutdatedPivot.setCurrentVersion(myCurrentVersion);
+                brewOutdatedPivot.setPinned(myPinned);
+                this.brewOutdatedPivotRepository.save(brewOutdatedPivot);
+            });
+        }
+    }
+
+    public Page<BrewOutdatedPivot> getBrewOutdatedPivotList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Page<BrewOutdatedPivot> result = brewOutdatedPivotRepository.findAll(pageable);
+        return result;
     }
 }
