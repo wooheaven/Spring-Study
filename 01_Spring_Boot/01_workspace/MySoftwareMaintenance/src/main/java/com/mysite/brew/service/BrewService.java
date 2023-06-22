@@ -263,7 +263,7 @@ public class BrewService {
 
     public Page<BrewOutdatedPivot> getBrewOutdatedPivotList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.asc("id"));
+        sorts.add(Sort.Order.desc("lastModifiedDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         Page<BrewOutdatedPivot> result = brewOutdatedPivotRepository.findAll(pageable);
         return result;

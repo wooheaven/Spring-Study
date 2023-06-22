@@ -26,6 +26,6 @@ public class BrewOutdated extends CommonLocalDateTime {
     private Long id;
 
     @Type(JsonType.class)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "json")
     private Map<String, String> properties = new HashMap<>();
 }

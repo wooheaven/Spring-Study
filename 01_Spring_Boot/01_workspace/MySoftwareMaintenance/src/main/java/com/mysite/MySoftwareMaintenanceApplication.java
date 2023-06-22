@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class MySoftwareMaintenanceApplication {
 
     public static void main(String[] args) throws Exception {
-         Tmp tmp = new Tmp();
-         tmp.db();
         SpringApplication.run(MySoftwareMaintenanceApplication.class, args);
     }
 }
