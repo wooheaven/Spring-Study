@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.mysite.brew.model.BrewDeps;
 import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewOutdatedPivot;
@@ -66,6 +67,19 @@ public class BrewController {
         return "brew_outdated_pivot_list";
     }
 
+    @GetMapping("deps")
+    public String deps() throws IOException, InterruptedException, ExecutionException {
+        brewService.deps();
+        return "redirect:/brew/depsList";
+    }
+
+    @GetMapping("depsList")
+    public String depsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewDeps> paging = this.brewService.getBrewDepsList(page);
+        model.addAttribute("paging", paging);
+        return "brew_deps_list";
+    }
+
     @GetMapping("ls")
     public String ls() throws IOException, InterruptedException, ExecutionException {
         brewService.ls();
@@ -90,16 +104,16 @@ public class BrewController {
         return "redirect:/";
     }
 
-    @GetMapping("deps")
-    public String deps() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100, "cd /home/linuxbrew");
+//    @GetMapping("deps")
+//    public String deps() throws AWTException {
+//        MyRobot myRobot = new MyRobot();
+//        myRobot.openTerminal(100, "cd /home/linuxbrew");
 //        myRobot.openTerminal(100);
 //        myRobot.keyboardPressRelease(1000, "cd /home/linuxbrew");
-        myRobot.keyboardPressRelease(1000, "./03_brew_deps.sh");
-        myRobot.goToFireFox(1000);
-        return "redirect:/";
-    }
+//        myRobot.keyboardPressRelease(1000, "./03_brew_deps.sh");
+//        myRobot.goToFireFox(1000);
+//        return "redirect:/";
+//    }
 
     @GetMapping("check")
     public String check() throws AWTException {

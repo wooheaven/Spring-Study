@@ -4,6 +4,7 @@ import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,17 +25,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mysite.brew.model.BrewDeps;
 import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewOutdatedPivot;
 import com.mysite.brew.model.BrewUpdate;
+import com.mysite.brew.repository.BrewDepsRepository;
 import com.mysite.brew.repository.BrewLsRepository;
 import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.TerminalStreamCallable;
 
-import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -43,6 +45,7 @@ public class BrewService {
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
+    private final BrewDepsRepository brewDepsRepository;
     private final BrewLsRepository brewLsRepository;
 
     public void ls() throws IOException, InterruptedException, ExecutionException {
@@ -240,25 +243,24 @@ public class BrewService {
     }
 
     public void outdatedPivot() {
-        List<BrewOutdated> brewOutdatedList = this.brewOutdatedRepository.findAll();
-        for (BrewOutdated myBrewOutdated : brewOutdatedList) {
-            Map<String, String> myProperties = myBrewOutdated.getProperties();
-            String myContent = myProperties.get("formulae");
-            JsonArray jsonArray = (JsonArray) readJSON(myContent);
-            jsonArray.forEach(myJson -> {
-                System.out.println(myJson);
-                String myName = myJson.getAsJsonObject().get("name").getAsString();
-                String myInstalledVersion = myJson.getAsJsonObject().get("installed_versions").getAsString();
-                String myCurrentVersion = myJson.getAsJsonObject().get("current_version").getAsString();
-                Boolean myPinned = myJson.getAsJsonObject().get("pinned").getAsBoolean();
-                BrewOutdatedPivot brewOutdatedPivot = new BrewOutdatedPivot();
-                brewOutdatedPivot.setName(myName);
-                brewOutdatedPivot.setInstalledVersion(myInstalledVersion);
-                brewOutdatedPivot.setCurrentVersion(myCurrentVersion);
-                brewOutdatedPivot.setPinned(myPinned);
-                this.brewOutdatedPivotRepository.save(brewOutdatedPivot);
-            });
-        }
+        this.brewOutdatedPivotRepository.deleteAll();
+        BrewOutdated myBrewOutdated = this.brewOutdatedRepository.findFirstByOrderByIdDesc();
+        Map<String, String> myProperties = myBrewOutdated.getProperties();
+        String myContent = myProperties.get("formulae");
+        JsonArray jsonArray = (JsonArray) readJSON(myContent);
+        jsonArray.forEach(myJson -> {
+            System.out.println(myJson);
+            String myName = myJson.getAsJsonObject().get("name").getAsString();
+            String myInstalledVersion = myJson.getAsJsonObject().get("installed_versions").getAsString();
+            String myCurrentVersion = myJson.getAsJsonObject().get("current_version").getAsString();
+            Boolean myPinned = myJson.getAsJsonObject().get("pinned").getAsBoolean();
+            BrewOutdatedPivot brewOutdatedPivot = new BrewOutdatedPivot();
+            brewOutdatedPivot.setName(myName);
+            brewOutdatedPivot.setInstalledVersion(myInstalledVersion);
+            brewOutdatedPivot.setCurrentVersion(myCurrentVersion);
+            brewOutdatedPivot.setPinned(myPinned);
+            this.brewOutdatedPivotRepository.save(brewOutdatedPivot);
+        });
     }
 
     public Page<BrewOutdatedPivot> getBrewOutdatedPivotList(int page) {
@@ -268,4 +270,120 @@ public class BrewService {
         Page<BrewOutdatedPivot> result = brewOutdatedPivotRepository.findAll(pageable);
         return result;
     }
+
+    public void deps() throws IOException, InterruptedException, ExecutionException {
+        this.brewDepsRepository.deleteAll();
+        List<BrewOutdatedPivot> brewOutdatedPivotList = this.brewOutdatedPivotRepository.findAll();
+        // insert BrewDeps from BrewOutdatedPivot
+        for (BrewOutdatedPivot brewOutdatedPivot : brewOutdatedPivotList) {
+            String myName = brewOutdatedPivot.getName();
+            // run deps
+            List<String> resultList = depsRunByProcessBuilder(
+                    "/home/linuxbrew/.linuxbrew/bin/brew deps --graph --dot " + myName);
+
+            // read deps from resultList
+            String content = "";
+            for (String myLine : resultList) {
+                if (myLine.length() > 0) {
+                    content += myLine;
+                    content += "\n";
+                }
+            }
+            content = content.replaceAll("\n$", "");
+            content = content.replaceAll("  \"", "");
+            content = content.replaceAll("\" -> \"", " ");
+            content = content.replaceAll("\"", "");
+
+            // save deps from content
+            String myRootNode = myName;
+            for (String myLine : content.split("\n")) {
+                String[] mySplits = myLine.split(" ");
+                String myParentNode = mySplits[0];
+                String myChildNode = mySplits[1];
+                BrewDeps brewDeps = new BrewDeps();
+                brewDeps.setRootNode(myRootNode);
+                brewDeps.setParentNode(myParentNode);
+                brewDeps.setChildNode(myChildNode);
+                if (myName.equals(myParentNode)) {
+                    Integer myLevel = 0;
+                    brewDeps.setLevel(myLevel);
+                }
+                this.brewDepsRepository.save(brewDeps);
+            }
+
+            // update level
+            Integer count = this.brewDepsRepository.countByLevel(null);
+            Integer myLevel = 0;
+            while (0 < count) {
+                List<BrewDeps> brewDepsList = this.brewDepsRepository.findAllByRootNodeAndLevel(myRootNode, myLevel);
+                for (BrewDeps myBrewDeps : brewDepsList) {
+                    String rootNode = myBrewDeps.getRootNode();
+                    String parentNode = myBrewDeps.getParentNode();
+                    String childNode = myBrewDeps.getChildNode();
+                    List<BrewDeps> targetList = this.brewDepsRepository.findAllByRootNodeAndParentNodeAndLevel(rootNode,
+                            childNode, null);
+                    for (BrewDeps targetBrewDeps : targetList) {
+                        targetBrewDeps.setLevel(myLevel + 1);
+                        if (1 == targetList.size()) {
+                            String targetChildNode = targetBrewDeps.getChildNode();
+                            targetBrewDeps.setLeafNode(targetChildNode);
+                        }
+                        this.brewDepsRepository.save(targetBrewDeps);
+                        System.out.println(targetBrewDeps);
+                    }
+                    System.out.println(targetList);
+                }
+                myLevel += 1;
+                count = this.brewDepsRepository.countByLevel(null);
+            }
+        }
+
+        // update sortNumber
+        List<String> rootNodeList = brewDepsRepository.findGroupByRootNodeWithCustom();
+        rootNodeList = sortBydependency(rootNodeList);
+        List<BrewDeps> brewDepsList = brewDepsRepository.updateSortNumberByCustom(rootNodeList);
+        for (BrewDeps myBrewDeps : brewDepsList) {
+            this.brewDepsRepository.save(myBrewDeps);
+        }
+    }
+
+    private List<String> sortBydependency(List<String> rootNodeList) {
+        List<String> result = null;
+        if (1 == rootNodeList.size()) {
+            result = rootNodeList;
+        } else {
+            int rootNodeListSize = rootNodeList.size();
+            for (int i = 0; i < rootNodeListSize - 1; i++) {
+                for (int j = i + 1; j < rootNodeListSize; j++) {
+                    String iRootNode = rootNodeList.get(i);
+                    String jRootNode = rootNodeList.get(j);
+                    Integer count = this.brewDepsRepository.countByRootNodeAndChildNode(jRootNode, iRootNode);
+                    if (0 < count) {
+                        Collections.swap(rootNodeList, i, j);
+                        rootNodeList = sortBydependency(rootNodeList);
+                    }
+                }
+            }
+            result = rootNodeList;
+        }
+        return result;
+    }
+
+    private List<String> depsRunByProcessBuilder(String command)
+            throws IOException, InterruptedException, ExecutionException {
+        List<String> result = brewCommandRunByProcessBuilder(command);
+        int size = result.size();
+        result.remove(size - 1);
+        result.remove(0);
+        return result;
+    }
+
+    public Page<BrewDeps> getBrewDepsList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("sortNumber"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        Page<BrewDeps> result = brewDepsRepository.findAll(pageable);
+        return result;
+    }
+
 }
