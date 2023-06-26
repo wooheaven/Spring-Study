@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,16 +21,13 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mysite.brew.model.BrewDeps;
-import com.mysite.brew.model.BrewLs;
 import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewOutdatedPivot;
 import com.mysite.brew.model.BrewUpdate;
 import com.mysite.brew.repository.BrewDepsRepository;
-import com.mysite.brew.repository.BrewLsRepository;
 import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
@@ -46,78 +42,6 @@ public class BrewService {
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     private final BrewDepsRepository brewDepsRepository;
-    private final BrewLsRepository brewLsRepository;
-
-    public void ls() throws IOException, InterruptedException, ExecutionException {
-        // run ls
-        List<String> resultList = lsRunByProcessBuilder("/home/linuxbrew/.linuxbrew/bin/brew ls --formulae --version");
-        String content = "";
-        for (String myLine : resultList) {
-            if (myLine.length() > 0) {
-                content += myLine;
-                content += "\n";
-            }
-        }
-        content = content.replaceAll("\n$", "");
-
-        // write ls to table
-        BrewLs brewLs = null;
-        for (String line : content.split("\\r?\\n")) {
-            String[] items = line.split(" ");
-            if (items.length > 1) {
-                brewLs = new BrewLs();
-                brewLs.setPackageName(items[0]);
-                brewLs.setInstalledVersion(items[1]);
-                List<BrewLs> idList = this.brewLsRepository.findAllByPackageNameOrderById(brewLs.getPackageName());
-                if (idList.size() > 0) {
-                    brewLs.setId(idList.get(0).getId());
-                }
-                this.brewLsRepository.save(brewLs);
-            }
-        }
-    }
-
-    public Page<BrewLs> getBrewLsList(int page) {
-        BrewOutdated brewOutdated = brewOutdatedRepository.findFirstByOrderByIdDesc();
-        Gson gson = new GsonBuilder().create();
-        Map<String, String> myProperties = brewOutdated.getProperties();
-        String myValueString = myProperties.get("formulae");
-        JsonArray myValueJsonArray = gson.fromJson(myValueString, JsonArray.class);
-        if (myValueJsonArray.size() > 0) {
-            for (JsonElement myJson : myValueJsonArray) {
-                JsonObject myJsonObject = myJson.getAsJsonObject();
-                String myName = myJsonObject.get("name").getAsString();
-                String myCurrentVersion = myJsonObject.get("current_version").getAsString();
-                BrewLs myBrewLs = brewLsRepository.findByPackageName(myName);
-                myBrewLs.setPackageName(myName);
-                myBrewLs.setCurrentVersion(myCurrentVersion);
-                brewLsRepository.save(myBrewLs);
-            }
-        }
-
-        List<Map<String, Long>> idMapToSortNumber = brewLsRepository.findIdSortNumberByCustom();
-        if (idMapToSortNumber.size() > 0) {
-            for (Map<String, Long> myMap : idMapToSortNumber) {
-                Long myId = myMap.get("brew_ls_id");
-                Optional<BrewLs> myBrewLs = brewLsRepository.findById(myId);
-                if (myBrewLs.isPresent()) {
-                    Long mySortNumberLong = myMap.get("sort_number");
-                    myBrewLs.get().setSortNumber(mySortNumberLong);
-                    brewLsRepository.save(myBrewLs.get());
-                }
-            }
-        }
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.asc("sortNumber"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        Page<BrewLs> result = brewLsRepository.findAll(pageable);
-        return result;
-    }
-
-    private List<String> lsRunByProcessBuilder(String command)
-            throws IOException, InterruptedException, ExecutionException {
-        return brewCommandRunByProcessBuilder(command);
-    }
 
     public void update() throws AWTException, IOException, InterruptedException, ExecutionException {
         // run update

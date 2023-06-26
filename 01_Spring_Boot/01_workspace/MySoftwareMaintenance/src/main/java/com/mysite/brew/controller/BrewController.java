@@ -80,62 +80,6 @@ public class BrewController {
         return "brew_deps_list";
     }
 
-    @GetMapping("ls")
-    public String ls() throws IOException, InterruptedException, ExecutionException {
-        brewService.ls();
-        return "redirect:/brew/lsList";
-    }
-
-    @GetMapping("lsList")
-    public String lsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-        Page<BrewLs> paging = this.brewService.getBrewLsList(page);
-        model.addAttribute("paging", paging);
-        return "brew_ls_list";
-    }
-
-    @GetMapping("tail")
-    public String tail() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100, "cd /home/linuxbrew");
-//        myRobot.openTerminal(100);
-//        myRobot.keyboardPressRelease(1000, "cd /home/linuxbrew");
-        myRobot.keyboardPressRelease(1000, "./02_tail_outdated.sh");
-        myRobot.goToFireFox(1000);
-        return "redirect:/";
-    }
-
-//    @GetMapping("deps")
-//    public String deps() throws AWTException {
-//        MyRobot myRobot = new MyRobot();
-//        myRobot.openTerminal(100, "cd /home/linuxbrew");
-//        myRobot.openTerminal(100);
-//        myRobot.keyboardPressRelease(1000, "cd /home/linuxbrew");
-//        myRobot.keyboardPressRelease(1000, "./03_brew_deps.sh");
-//        myRobot.goToFireFox(1000);
-//        return "redirect:/";
-//    }
-
-    @GetMapping("check")
-    public String check() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100, "cd /home/linuxbrew");
-//        myRobot.keyboardPressRelease(1000, "cd /home/linuxbrew");
-        myRobot.keyboardPressRelease(1000, "./04_tail_check.sh");
-        myRobot.goToFireFox(1000);
-        return "redirect:/";
-    }
-
-    @GetMapping("etc")
-    public String etc() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100, "cd /home/linuxbrew");
-//        myRobot.openTerminal(100);
-//        myRobot.keyboardPressRelease(1000, "cd /home/linuxbrew");
-        myRobot.keyboardPressRelease(1000, "./08_05_06_07.sh");
-        myRobot.goToFireFox(1000);
-        return "redirect:/";
-    }
-
     @GetMapping("cleanup")
     public String cleanup() throws IOException, InterruptedException, ExecutionException {
         brewService.cleanup();
