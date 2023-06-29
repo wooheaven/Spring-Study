@@ -200,10 +200,10 @@ public class BrewService {
         List<BrewOutdatedPivot> brewOutdatedPivotList = this.brewOutdatedPivotRepository.findAll();
         // insert BrewDeps from BrewOutdatedPivot
         for (BrewOutdatedPivot brewOutdatedPivot : brewOutdatedPivotList) {
-            String myName = brewOutdatedPivot.getName();
+            String myRootNode = brewOutdatedPivot.getName();
             // run deps
             List<String> resultList = depsRunByProcessBuilder(
-                    "/home/linuxbrew/.linuxbrew/bin/brew deps --graph --dot " + myName);
+                    "/home/linuxbrew/.linuxbrew/bin/brew deps --graph --dot " + myRootNode);
 
             // read deps from resultList
             String content = "";
@@ -219,43 +219,53 @@ public class BrewService {
             content = content.replaceAll("\"", "");
 
             // save deps from content
-            String myRootNode = myName;
-            for (String myLine : content.split("\n")) {
-                String[] mySplits = myLine.split(" ");
-                String myParentNode = mySplits[0];
-                String myChildNode = mySplits[1];
+            if (content.length() == 0) {
                 BrewDeps brewDeps = new BrewDeps();
                 brewDeps.setRootNode(myRootNode);
-                brewDeps.setParentNode(myParentNode);
-                brewDeps.setChildNode(myChildNode);
-                if (myName.equals(myParentNode)) {
-                    Integer myLevel = 0;
-                    brewDeps.setLevel(myLevel);
-                }
+                brewDeps.setParentNode(myRootNode);
+                brewDeps.setLeafNode(myRootNode);
+                brewDeps.setLevel(1);
                 this.brewDepsRepository.save(brewDeps);
+            } else {
+                for (String myLine : content.split("\n")) {
+                    String[] mySplits = myLine.split(" ");
+                    String myParentNode = mySplits[0];
+                    String myChildNode = mySplits[1];
+                    BrewDeps brewDeps = new BrewDeps();
+                    brewDeps.setRootNode(myRootNode);
+                    brewDeps.setParentNode(myParentNode);
+                    brewDeps.setChildNode(myChildNode);
+                    if (myRootNode.equals(myParentNode)) {
+                        brewDeps.setLevel(1);
+                    }
+                    this.brewDepsRepository.save(brewDeps);
+                }
             }
 
             // update level
             Integer count = this.brewDepsRepository.countByLevel(null);
-            Integer myLevel = 0;
+            Integer myLevel = 1;
             while (0 < count) {
                 List<BrewDeps> brewDepsList = this.brewDepsRepository.findAllByRootNodeAndLevel(myRootNode, myLevel);
                 for (BrewDeps myBrewDeps : brewDepsList) {
                     String rootNode = myBrewDeps.getRootNode();
                     String parentNode = myBrewDeps.getParentNode();
                     String childNode = myBrewDeps.getChildNode();
-                    List<BrewDeps> targetList = this.brewDepsRepository.findAllByRootNodeAndParentNodeAndLevel(rootNode,
-                            childNode, null);
+                    List<BrewDeps> targetList = new ArrayList<BrewDeps>();
+                    if (childNode.equals("python")) {
+                        targetList = this.brewDepsRepository.findAllByRootNodeAndParentNodeStartsWithAndLevel(rootNode,
+                                childNode, null);
+                    } else {
+                        targetList = this.brewDepsRepository.findAllByRootNodeAndParentNodeAndLevel(rootNode,
+                                childNode, null);
+                    }
                     for (BrewDeps targetBrewDeps : targetList) {
                         targetBrewDeps.setLevel(myLevel + 1);
-                        if (1 == targetList.size()) {
-                            String targetChildNode = targetBrewDeps.getChildNode();
-                            targetBrewDeps.setLeafNode(targetChildNode);
+                        if (targetBrewDeps.getChildNode().length() == 0) {
+                            targetBrewDeps.setLeafNode(targetBrewDeps.getParentNode());
                         }
                         this.brewDepsRepository.save(targetBrewDeps);
-                        System.out.println(targetBrewDeps);
                     }
-                    System.out.println(targetList);
                 }
                 myLevel += 1;
                 count = this.brewDepsRepository.countByLevel(null);

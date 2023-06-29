@@ -14,7 +14,9 @@ public interface BrewDepsRepository extends JpaRepository<BrewDeps, Long>, Custo
 
     List<BrewDeps> findAllByRootNodeAndLevel(String myRootNode, Integer myLevel);
 
-    List<BrewDeps> findAllByRootNodeAndParentNodeAndLevel(String myRootNode, String myChildNode, Integer myLevel);
+    List<BrewDeps> findAllByRootNodeAndParentNodeAndLevel(String myRootNode, String myParentNode, Integer myLevel);
+
+    List<BrewDeps> findAllByRootNodeAndParentNodeStartsWithAndLevel(String myRootNode, String myParentNode, Integer myLevel);
 
     @Query(value = ""
             + "SELECT "
