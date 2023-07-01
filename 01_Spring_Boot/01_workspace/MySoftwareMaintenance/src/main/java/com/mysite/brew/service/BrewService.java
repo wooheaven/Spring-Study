@@ -95,19 +95,16 @@ public class BrewService {
             builder.command("bash.exe", "-c", command);
         }
         Process process = builder.start();
-        TerminalStreamCallable terminalExecutor = new TerminalStreamCallable(process.getInputStream(),
-                new ArrayList<String>());
+        List<String> terminalOutput = new ArrayList<>();
+        TerminalStreamCallable terminalExecutor = new TerminalStreamCallable(process.getInputStream(), terminalOutput);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Future<List<String>> listFuture = executorService.submit(terminalExecutor);
 
         int exitCode = process.waitFor(); /* 0 is normal termination */
         System.out.println(exitCode + " = exitCode : 0 is normal termination");
 
-        List<String> terminalOutput = listFuture.get(); // wait untill terminalExecutor is finished
-        for (String myTerminalLine : terminalOutput) {
-            System.out.println(myTerminalLine);
-        }
-        return terminalOutput;
+        List<String> result = listFuture.get(); // wait until terminalExecutor is finished
+        return result;
     }
 
     public void outdated() throws Exception {
