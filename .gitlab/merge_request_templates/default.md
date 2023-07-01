@@ -1,1 +1,1 @@
-Closes %{issues}
+
