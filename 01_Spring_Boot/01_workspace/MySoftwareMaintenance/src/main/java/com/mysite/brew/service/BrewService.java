@@ -45,7 +45,10 @@ public class BrewService {
 
     public void update() throws AWTException, IOException, InterruptedException, ExecutionException {
         // run update
-        List<String> resultList = updateRunByProcessBuilder("/home/linuxbrew/.linuxbrew/bin/brew update");
+        List<String> resultList = new ArrayList<>();
+        while (0 == resultList.size()) {
+            resultList = updateRunByProcessBuilder("/home/linuxbrew/.linuxbrew/bin/brew update");
+        }
 
         // read update from resultList
         BrewUpdate brewUpdate = new BrewUpdate();
