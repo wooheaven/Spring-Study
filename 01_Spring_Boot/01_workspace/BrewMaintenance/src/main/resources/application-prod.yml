@@ -1,0 +1,33 @@
+--- # Web port
+server:
+  port: 8081
+
+--- # Thymeleaf
+spring:
+  thymeleaf:
+    cache: true
+
+--- # PostgreSQL
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:55432/mydb
+    username: myuser
+    password: 123qwe
+    hikari:
+      maximum-pool-size: 1
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+--- # JPA
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
