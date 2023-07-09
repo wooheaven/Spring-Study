@@ -1,0 +1,133 @@
+<html layout:decorate="~{layout}">
+
+    <div layout:fragment="content" class="container my-3">
+        <table class="table">
+            <thead class="table-dark">
+                <tr>
+                    <th style="text-align:left; width:3%;">Software</th>
+                    <th style="text-align:left; width:4%;">번호</th>
+                    <th style="text-align:left; width:7%;">Link</th>
+                    <th style="text-align:left; width:86%;">내용</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>sdk</td>
+                    <td>00</td>
+                    <td><a href="/sdk/update"> run</a></td>
+                    <td>sdk update</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>01</td>
+                    <td><a href="/sdk/version"> run</a></td>
+                    <td>sdk version</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>02</td>
+                    <td><a href="/sdk/list/java"> run</a></td>
+                    <td>sdk list java</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>03</td>
+                    <td><a href="/sdk/candidates/java"> run</a></td>
+                    <td>sdk candidates java</td>
+                </tr>
+                <tr>
+                    <td>snap</td>
+                    <td>00</td>
+                    <td><a href="/snap/refresh/list"> run</a></td>
+                    <td>sudo snap refresh --list</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>01</td>
+                    <td><a href="/snap/refresh/target"> run</a></td>
+                    <td>sudo snap refresh --list 2>&1 | awk 'BEGIN{FS=OFS=" "} {if (NF == 6 && $NF != "Notes") {print $1} }'
+                        | xargs -rn1 sudo snap refresh</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>02</td>
+                    <td><a href="/snap/list"> run</a></td>
+                    <td>sudo snap list --all</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>03</td>
+                    <td><a href="/snap/remove"> run</a></td>
+                    <td>sudo snap list --all | awk '/disabled/{print $1" --revision "$3}' | xargs -rn3 sudo snap remove</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>04</td>
+                    <td><a href="/snap/changes"> run</a></td>
+                    <td>sudo snap changes</td>
+                </tr>
+                <tr>
+                    <td>brew</td>
+                    <td>01</td>
+                    <td>
+                        <a href="/brew/update"> run</a>,
+                        <a href="/brew/updateList">log</a>
+                    </td>
+                    <td>brew update</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>02</td>
+                    <td>
+                        <a href="/brew/outdated"> run</a>,
+                        <a href="/brew/outdatedList">log</a>
+                    </td>
+                    <td>brew outdated --json</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>03</td>
+                    <td>
+                        <a href="/brew/outdatedPivot"> run</a>,
+                        <a href="/brew/outdatedPivotList">log</a>
+                    </td>
+                    <td>brew outdated --json | pivot</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>04</td>
+                    <td>
+                        <a href="/brew/deps"> run</a>,
+                        <a href="/brew/depsList">log</a>
+                    </td>
+                    <td>brew outdated --json | pivot | brew deps --graph --dot</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>05</td>
+                    <td><a href="/brew/cleanup"> run</a></td>
+                    <td>brew cleanup</td>
+                </tr>
+                <tr>
+                    <td>icloud</td>
+                    <td>00</td>
+                    <td><a href="/icloud/moveFile"> run</a></td>
+                    <td>icloud file to folder</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>01</td>
+                    <td><a href="/icloud/trash"> run</a></td>
+                    <td>icloud file to trash</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>02 00 01</td>
+                    <td><a href="/icloud/etc"> run</a></td>
+                    <td>icloud file to folder and trash</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</html>
