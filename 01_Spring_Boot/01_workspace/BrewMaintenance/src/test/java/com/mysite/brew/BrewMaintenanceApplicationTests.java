@@ -1,4 +1,4 @@
-package com.mysite.brewmaintenance;
+package com.mysite.brew;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
