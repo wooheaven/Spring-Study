@@ -2,7 +2,7 @@ stages:
   - test
 
 test:
-  image: maven:3-openjdk-17
+  image: maven:3.9.3-eclipse-temurin-17 # based on ubuntu 22.04
   stage: test
   variables:
     MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -10,8 +10,11 @@ test:
     - pwd
     - java -version
     - mvn -version
+    - sudo apt update && sudo apt install -y -q --allow-unauthenticated build-essential git sudo
+    - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    - source /root/.profile
     - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn clean compile --quiet
   script:
-    - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn test
+    - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn test --quiet
   rules:
     - if: $CI_COMMIT_BRANCH
