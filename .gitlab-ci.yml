@@ -1,0 +1,17 @@
+stages:
+  - test
+
+test:
+  image: maven:3-openjdk-17
+  stage: test
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  before_script:
+    - mvn clean
+  script:
+    - pwd
+    - java -version
+    - mvn -version
+    - mvn test
+  rules:
+    - if: $CI_COMMIT_BRANCH
