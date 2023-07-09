@@ -7,11 +7,11 @@ test:
   variables:
     MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   before_script:
-    - mvn clean
-  script:
     - pwd
     - java -version
     - mvn -version
-    - mvn test
+    - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn clean compile --quiet
+  script:
+    - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn test
   rules:
     - if: $CI_COMMIT_BRANCH
