@@ -1,6 +1,9 @@
 package com.mysite.brew.service;
 
+import com.google.gson.*;
+import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewUpdate;
+import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.TerminalStreamCallable;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +24,9 @@ import java.util.concurrent.Future;
 @Service
 public class BrewService {
     private static final String brewUpdate = "/home/linuxbrew/.linuxbrew/bin/brew update";
+    private static final String brewOutdated = "/home/linuxbrew/.linuxbrew/bin/brew outdated --json";
     private final BrewUpdateRepository brewUpdateRepository;
+    private final BrewOutdatedRepository brewOutdatedRepository;
 
     public void update() throws Exception {
         // run update
@@ -30,7 +35,7 @@ public class BrewService {
             lineList = runByProcessBuilder(brewUpdate);
         }
 
-        // read update from resultList
+        // read update
         BrewUpdate brewUpdate = new BrewUpdate();
         String content = "";
         for (String myLine : lineList) {
@@ -74,5 +79,49 @@ public class BrewService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return brewUpdateRepository.findAll(pageable);
+    }
+
+    public void outdated() throws Exception {
+        // run outdated
+        List<String> lineList = runByProcessBuilder(brewOutdated);
+
+        // read outdated
+        BrewOutdated brewOutdated = new BrewOutdated();
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("conten\n$", "");
+        JsonObject jsonObject = (JsonObject) readJSON(content);
+        JsonArray formulae = (JsonArray) jsonObject.get("formulae");
+        Gson gson = new GsonBuilder().create();
+        String formulaeString = gson.toJson(formulae);
+        brewOutdated.getProperties().put("formulae", formulaeString);
+
+        // write outdated to table
+        this.brewOutdatedRepository.save(brewOutdated);
+    }
+
+    private Object readJSON(String path) {
+        Object result = null;
+        if (path.charAt(0) == '{') {
+            JsonObject jsonObject = new JsonParser().parse(path).getAsJsonObject();
+            result = jsonObject;
+        } else if (path.charAt(0) == '[') {
+            JsonArray jsonArray = new JsonParser().parse(path).getAsJsonArray();
+            result = jsonArray;
+        }
+        return result;
+    }
+
+    public Page<BrewOutdated> getBrewOutdatedList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Page<BrewOutdated> result = brewOutdatedRepository.findAll(pageable);
+        return result;
     }
 }

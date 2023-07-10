@@ -1,5 +1,6 @@
 package com.mysite.brew.controller;
 
+import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewUpdate;
 import com.mysite.brew.service.BrewService;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,18 @@ public class BrewController {
         Page<BrewUpdate> paging = this.brewService.getBrewUpdateList(page);
         model.addAttribute("paging", paging);
         return "brew_update_list";
+    }
+
+    @GetMapping("outdated")
+    public String outdated() throws Exception {
+        brewService.outdated();
+        return "redirect:/brew/outdatedList";
+    }
+
+    @GetMapping("outdatedList")
+    public String outdatedList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewOutdated> paging = this.brewService.getBrewOutdatedList(page);
+        model.addAttribute("paging", paging);
+        return "brew_outdated_list";
     }
 }
