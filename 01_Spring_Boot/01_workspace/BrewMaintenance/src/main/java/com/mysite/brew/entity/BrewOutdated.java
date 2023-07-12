@@ -1,4 +1,4 @@
-package com.mysite.brew.model;
+package com.mysite.brew.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;

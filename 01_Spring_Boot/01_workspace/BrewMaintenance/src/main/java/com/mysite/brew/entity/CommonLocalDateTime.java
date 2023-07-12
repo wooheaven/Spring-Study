@@ -1,4 +1,4 @@
-package com.mysite.brew.model;
+package com.mysite.brew.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
