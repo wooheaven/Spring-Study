@@ -1,0 +1,33 @@
+{
+  "formulae": [
+    {
+      "name": "git",
+      "installed_versions": [
+        "2.41.0_1"
+      ],
+      "current_version": "2.41.0_2",
+      "pinned": false,
+      "pinned_version": null
+    },
+    {
+      "name": "harfbuzz",
+      "installed_versions": [
+        "7.3.0_1"
+      ],
+      "current_version": "8.0.0",
+      "pinned": false,
+      "pinned_version": null
+    },
+    {
+      "name": "openldap",
+      "installed_versions": [
+        "2.6.4_1"
+      ],
+      "current_version": "2.6.5",
+      "pinned": false,
+      "pinned_version": null
+    }
+  ],
+  "casks": [
+  ]
+}

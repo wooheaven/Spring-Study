@@ -15,8 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 class BrewMaintenanceApplicationTests {
@@ -65,7 +69,7 @@ class BrewMaintenanceApplicationTests {
     }
 
     @Test
-    void BrewService_outdatedPivot_test() {
+    void BrewService_outdatedPivot_test() throws IOException {
         prepare_BrewService_outdatedPivot_test();
 
         long before = this.brewOutdatedPivotRepository.count();
@@ -80,40 +84,10 @@ class BrewMaintenanceApplicationTests {
         assert "git".equals(name);
     }
 
-    private void prepare_BrewService_outdatedPivot_test() {
-        String content = "{\n" +
-                "  \"formulae\": [\n" +
-                "    {\n" +
-                "      \"name\": \"git\",\n" +
-                "      \"installed_versions\": [\n" +
-                "        \"2.41.0_1\"\n" +
-                "      ],\n" +
-                "      \"current_version\": \"2.41.0_2\",\n" +
-                "      \"pinned\": false,\n" +
-                "      \"pinned_version\": null\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"name\": \"harfbuzz\",\n" +
-                "      \"installed_versions\": [\n" +
-                "        \"7.3.0_1\"\n" +
-                "      ],\n" +
-                "      \"current_version\": \"8.0.0\",\n" +
-                "      \"pinned\": false,\n" +
-                "      \"pinned_version\": null\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"name\": \"openldap\",\n" +
-                "      \"installed_versions\": [\n" +
-                "        \"2.6.4_1\"\n" +
-                "      ],\n" +
-                "      \"current_version\": \"2.6.5\",\n" +
-                "      \"pinned\": false,\n" +
-                "      \"pinned_version\": null\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"casks\": [\n" +
-                "  ]\n" +
-                "}";
+    private void prepare_BrewService_outdatedPivot_test() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File testFile = new File(classLoader.getResource("brew_outdated.json").getFile());
+        String content = Files.lines(testFile.toPath()).collect(Collectors.joining(System.lineSeparator()));
 
         JsonObject jsonObject = (JsonObject) this.brewService.readJSON(content);
         JsonArray formulae = (JsonArray) jsonObject.get("formulae");
