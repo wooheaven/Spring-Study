@@ -36,21 +36,29 @@ class BrewMaintenanceApplicationTests {
 
     @Test
     void contextLoads() {
+        assert brewUpdateRepository != null;
     }
 
     @Test
     void BrewService_update_test() throws Exception {
+        // before
         long before = this.brewUpdateRepository.count();
         assert 0 == before;
+
+        // do
         this.brewService.update();
+
+        // after
         long after = this.brewUpdateRepository.count();
         assert 1 == after;
+
+        // assert
         Optional<BrewUpdate> optional = brewUpdateRepository.findById(after);
         String content = "";
         if (optional.isPresent()) {
             content = optional.get().getContent();
         }
-        assert 0 < content.length();
+        assert content.equals("Already up-to-date.");
     }
 
     @Test

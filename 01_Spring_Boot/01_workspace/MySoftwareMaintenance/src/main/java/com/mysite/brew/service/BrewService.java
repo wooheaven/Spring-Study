@@ -1,6 +1,5 @@
 package com.mysite.brew.service;
 
-import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,11 +25,9 @@ import com.google.gson.JsonParser;
 import com.mysite.brew.model.BrewDeps;
 import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewOutdatedPivot;
-import com.mysite.brew.model.BrewUpdate;
 import com.mysite.brew.repository.BrewDepsRepository;
 import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
-import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.TerminalStreamCallable;
 
 import lombok.RequiredArgsConstructor;
@@ -38,40 +35,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class BrewService {
-    private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     private final BrewDepsRepository brewDepsRepository;
-
-    public void update() throws AWTException, IOException, InterruptedException, ExecutionException {
-        // run update
-        List<String> resultList = new ArrayList<>();
-        while (0 == resultList.size()) {
-            resultList = updateRunByProcessBuilder("/home/linuxbrew/.linuxbrew/bin/brew update");
-        }
-
-        // read update from resultList
-        BrewUpdate brewUpdate = new BrewUpdate();
-        String content = "";
-        for (String myLine : resultList) {
-            if (myLine.length() > 0) {
-                content += myLine;
-                content += "\n";
-            }
-        }
-        content = content.replaceAll("\n$", "");
-
-        // write update to table
-        brewUpdate.setContent(content);
-        this.brewUpdateRepository.save(brewUpdate);
-    }
-
-    public Page<BrewUpdate> getBrewUpdateList(int page) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("id"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return brewUpdateRepository.findAll(pageable);
-    }
 
     private List<String> updateRunByProcessBuilder(String command)
             throws IOException, InterruptedException, ExecutionException {

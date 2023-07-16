@@ -1,9 +1,10 @@
 package com.mysite.brew.controller;
 
-import java.awt.AWTException;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
+import com.mysite.brew.model.BrewDeps;
+import com.mysite.brew.model.BrewOutdated;
+import com.mysite.brew.model.BrewOutdatedPivot;
+import com.mysite.brew.service.BrewService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,34 +13,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.mysite.brew.model.BrewDeps;
-import com.mysite.brew.model.BrewLs;
-import com.mysite.brew.model.BrewOutdated;
-import com.mysite.brew.model.BrewOutdatedPivot;
-import com.mysite.brew.model.BrewUpdate;
-import com.mysite.brew.service.BrewService;
-import com.mysite.robot.MyRobot;
-
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 @RequestMapping("/brew")
 @RequiredArgsConstructor
 @Controller
 public class BrewController {
     private final BrewService brewService;
-
-    @GetMapping("update")
-    public String update() throws AWTException, IOException, InterruptedException, ExecutionException {
-        brewService.update();
-        return "redirect:/brew/updateList";
-    }
-
-    @GetMapping("updateList")
-    public String updateList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-        Page<BrewUpdate> paging = this.brewService.getBrewUpdateList(page);
-        model.addAttribute("paging", paging);
-        return "brew_update_list";
-    }
 
     @GetMapping("outdated")
     public String outdated() throws Exception {
