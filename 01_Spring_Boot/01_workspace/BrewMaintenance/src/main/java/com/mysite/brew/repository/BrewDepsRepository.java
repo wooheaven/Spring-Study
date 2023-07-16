@@ -1,6 +1,6 @@
 package com.mysite.brew.repository;
 
-import com.mysite.brew.model.BrewDeps;
+import com.mysite.brew.entity.BrewDeps;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

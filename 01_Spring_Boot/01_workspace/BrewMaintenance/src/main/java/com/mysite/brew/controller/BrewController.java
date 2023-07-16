@@ -1,5 +1,6 @@
 package com.mysite.brew.controller;
 
+import com.mysite.brew.entity.BrewDeps;
 import com.mysite.brew.entity.BrewOutdated;
 import com.mysite.brew.entity.BrewOutdatedPivot;
 import com.mysite.brew.entity.BrewUpdate;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -59,5 +61,30 @@ public class BrewController {
         Page<BrewOutdatedPivot> paging = this.brewService.getBrewOutdatedPivotList(page);
         model.addAttribute("paging", paging);
         return "brew_outdated_pivot_list";
+    }
+
+    @GetMapping("deps")
+    public String deps() throws Exception {
+        brewService.deps();
+        return "redirect:/brew/depsList";
+    }
+
+    @GetMapping("depsList")
+    public String depsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewDeps> paging = this.brewService.getBrewDepsList(page);
+        model.addAttribute("paging", paging);
+        return "brew_deps_list";
+    }
+
+    @GetMapping("/upgrade/{name}")
+    public String upgrade(@PathVariable("name") String name) throws Exception {
+        brewService.upgrade(name);
+        return "redirect:/";
+    }
+
+    @GetMapping("cleanup")
+    public String cleanup() throws Exception {
+        brewService.cleanup();
+        return "redirect:/";
     }
 }
