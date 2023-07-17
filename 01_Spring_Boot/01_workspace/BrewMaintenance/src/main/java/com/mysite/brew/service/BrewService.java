@@ -125,13 +125,13 @@ public class BrewService {
         this.brewOutdatedRepository.save(brewOutdated);
     }
 
-    public Object readJSON(String path) {
+    public Object readJSON(String content) {
         Object result = null;
-        if (path.charAt(0) == '{') {
-            JsonObject jsonObject = new JsonParser().parse(path).getAsJsonObject();
+        if (content.charAt(0) == '{') {
+            JsonObject jsonObject = new JsonParser().parse(content).getAsJsonObject();
             result = jsonObject;
-        } else if (path.charAt(0) == '[') {
-            JsonArray jsonArray = new JsonParser().parse(path).getAsJsonArray();
+        } else if (content.charAt(0) == '[') {
+            JsonArray jsonArray = new JsonParser().parse(content).getAsJsonArray();
             result = jsonArray;
         }
         return result;

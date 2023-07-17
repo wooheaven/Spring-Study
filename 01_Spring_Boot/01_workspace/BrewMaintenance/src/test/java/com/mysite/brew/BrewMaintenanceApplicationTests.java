@@ -12,6 +12,9 @@ import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.service.BrewService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,7 +25,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.mockito.Mockito.*;
+
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class BrewMaintenanceApplicationTests {
 
     @Autowired
@@ -33,6 +39,8 @@ class BrewMaintenanceApplicationTests {
     private BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     @Autowired
     private BrewService brewService;
+    @Mock
+    private BrewService brewServiceMock;
 
     @Test
     void contextLoads() {
@@ -90,6 +98,13 @@ class BrewMaintenanceApplicationTests {
         BrewOutdatedPivot brewOutdatedPivot = brewOutdatedPivotList.get(0);
         String name = brewOutdatedPivot.getName();
         assert "git".equals(name);
+    }
+
+    @Test
+    void BrewService_cleanup_test() throws Exception {
+        doNothing().when(this.brewServiceMock).cleanup();
+        this.brewServiceMock.cleanup();
+        verify(this.brewServiceMock, times(1)).cleanup();
     }
 
     private void prepare_BrewService_outdatedPivot_test() throws IOException {

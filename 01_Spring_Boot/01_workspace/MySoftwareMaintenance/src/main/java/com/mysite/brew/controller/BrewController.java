@@ -61,12 +61,6 @@ public class BrewController {
         return "brew_deps_list";
     }
 
-    @GetMapping("cleanup")
-    public String cleanup() throws IOException, InterruptedException, ExecutionException {
-        brewService.cleanup();
-        return "redirect:/";
-    }
-
     @GetMapping("/upgrade/{name}")
     public String upgrade(@PathVariable("name") String name)
             throws IOException, InterruptedException, ExecutionException {
