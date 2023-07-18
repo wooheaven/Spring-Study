@@ -4,14 +4,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mysite.brew.entity.BrewDeps;
 import com.mysite.brew.entity.BrewOutdated;
 import com.mysite.brew.entity.BrewOutdatedPivot;
 import com.mysite.brew.entity.BrewUpdate;
+import com.mysite.brew.repository.BrewDepsRepository;
 import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.service.BrewService;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class BrewMaintenanceApplicationTests {
@@ -38,17 +44,24 @@ class BrewMaintenanceApplicationTests {
     @Autowired
     private BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     @Autowired
+    private BrewDepsRepository brewDepsRepository;
+    @Autowired
     private BrewService brewService;
     @Mock
     private BrewService brewServiceMock;
 
+    @Order(1)
     @Test
     void contextLoads() {
         assert brewService != null;
         assert brewServiceMock != null;
         assert brewUpdateRepository != null;
+        assert brewOutdatedRepository != null;
+        assert brewOutdatedPivotRepository != null;
+        assert brewDepsRepository != null;
     }
 
+    @Order(2)
     @Test
     void BrewService_update_test() throws Exception {
         // before
@@ -71,6 +84,7 @@ class BrewMaintenanceApplicationTests {
         assert content.equals("Already up-to-date.");
     }
 
+    @Order(3)
     @Test
     void BrewService_outdated_test() throws Exception {
         long before = this.brewOutdatedRepository.count();
@@ -86,6 +100,7 @@ class BrewMaintenanceApplicationTests {
         assert 0 < formulae.length();
     }
 
+    @Order(4)
     @Test
     void BrewService_outdatedPivot_test() throws IOException {
         prepare_BrewService_outdatedPivot_test();
@@ -102,6 +117,23 @@ class BrewMaintenanceApplicationTests {
         assert "git".equals(name);
     }
 
+    @Order(5)
+    @Test
+    void BrewService_deps_test() throws Exception {
+        long before = this.brewDepsRepository.count();
+        assert 0 == before;
+        this.brewService.deps();
+        long after = this.brewDepsRepository.count();
+        assert 0 < after;
+
+        List<BrewDeps> brewDepsList = this.brewDepsRepository.findAll();
+        BrewDeps brewDeps = brewDepsList.get(0);
+        assert "git".equals(brewDeps.getRootNode());
+        assert "git".equals(brewDeps.getParentNode());
+        assert "gettext".equals(brewDeps.getChildNode());
+    }
+
+    @Order(6)
     @Test
     void BrewService_cleanup_test() throws Exception {
         doNothing().when(this.brewServiceMock).cleanup();
@@ -109,6 +141,7 @@ class BrewMaintenanceApplicationTests {
         verify(this.brewServiceMock, times(1)).cleanup();
     }
 
+    @Order(7)
     @Test
     void BrewService_upgrade_test() throws Exception {
         String targetLib = "targetLib";
