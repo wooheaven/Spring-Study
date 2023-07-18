@@ -60,12 +60,4 @@ public class BrewController {
         model.addAttribute("paging", paging);
         return "brew_deps_list";
     }
-
-    @GetMapping("/upgrade/{name}")
-    public String upgrade(@PathVariable("name") String name)
-            throws IOException, InterruptedException, ExecutionException {
-        System.out.println(String.format("brew upgrade %s", name));
-        brewService.upgrade(name);
-        return "redirect:/";
-    }
 }

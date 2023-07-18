@@ -44,6 +44,8 @@ class BrewMaintenanceApplicationTests {
 
     @Test
     void contextLoads() {
+        assert brewService != null;
+        assert brewServiceMock != null;
         assert brewUpdateRepository != null;
     }
 
@@ -105,6 +107,14 @@ class BrewMaintenanceApplicationTests {
         doNothing().when(this.brewServiceMock).cleanup();
         this.brewServiceMock.cleanup();
         verify(this.brewServiceMock, times(1)).cleanup();
+    }
+
+    @Test
+    void BrewService_upgrade_test() throws Exception {
+        String targetLib = "targetLib";
+        doNothing().when(this.brewServiceMock).upgrade(targetLib);
+        this.brewServiceMock.upgrade(targetLib);
+        verify(this.brewServiceMock, times(1)).upgrade(targetLib);
     }
 
     private void prepare_BrewService_outdatedPivot_test() throws IOException {

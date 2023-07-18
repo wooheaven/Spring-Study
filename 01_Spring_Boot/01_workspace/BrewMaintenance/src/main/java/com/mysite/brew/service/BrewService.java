@@ -10,6 +10,8 @@ import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.TerminalStreamCallable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +35,7 @@ public class BrewService {
     private static final String brewDeps = "/home/linuxbrew/.linuxbrew/bin/brew deps --graph --dot ";
     private static final String brewUpgrade = "/home/linuxbrew/.linuxbrew/bin/brew upgrade ";
     private static final String brewClean = "/home/linuxbrew/.linuxbrew/bin/brew cleanup";
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
@@ -87,6 +90,7 @@ public class BrewService {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Future<List<String>> listFuture = executorService.submit(terminalExecutor);
 
+        log.info(String.format("command is executed : %s", command));
         int exitCode = process.waitFor(); /* 0 is normal termination */
         System.out.println(exitCode + " = exitCode : 0 is normal termination");
 

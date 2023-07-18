@@ -122,11 +122,6 @@ public class BrewService {
         return result;
     }
 
-    public void upgrade(String name) throws IOException, InterruptedException, ExecutionException {
-        String command = String.format("/home/linuxbrew/.linuxbrew/bin/brew upgrade %s", name);
-        brewCommandRunByProcessBuilder(command);
-    }
-
     public void cleanup() throws IOException, InterruptedException, ExecutionException {
         String command = "/home/linuxbrew/.linuxbrew/bin/brew cleanup";
         brewCommandRunByProcessBuilder(command);
