@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mysite.brew.model.BrewDeps;
-import com.mysite.brew.model.BrewOutdated;
 import com.mysite.brew.model.BrewOutdatedPivot;
 import com.mysite.brew.repository.BrewDepsRepository;
 import com.mysite.brew.repository.BrewOutdatedPivotRepository;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,35 +71,6 @@ public class BrewService {
             JsonArray jsonArray = new JsonParser().parse(path).getAsJsonArray();
             result = jsonArray;
         }
-        return result;
-    }
-
-    public void outdatedPivot() {
-        this.brewOutdatedPivotRepository.deleteAll();
-        BrewOutdated myBrewOutdated = this.brewOutdatedRepository.findFirstByOrderByIdDesc();
-        Map<String, String> myProperties = myBrewOutdated.getProperties();
-        String myContent = myProperties.get("formulae");
-        JsonArray jsonArray = (JsonArray) readJSON(myContent);
-        jsonArray.forEach(myJson -> {
-            System.out.println(myJson);
-            String myName = myJson.getAsJsonObject().get("name").getAsString();
-            String myInstalledVersion = myJson.getAsJsonObject().get("installed_versions").getAsString();
-            String myCurrentVersion = myJson.getAsJsonObject().get("current_version").getAsString();
-            Boolean myPinned = myJson.getAsJsonObject().get("pinned").getAsBoolean();
-            BrewOutdatedPivot brewOutdatedPivot = new BrewOutdatedPivot();
-            brewOutdatedPivot.setName(myName);
-            brewOutdatedPivot.setInstalledVersion(myInstalledVersion);
-            brewOutdatedPivot.setCurrentVersion(myCurrentVersion);
-            brewOutdatedPivot.setPinned(myPinned);
-            this.brewOutdatedPivotRepository.save(brewOutdatedPivot);
-        });
-    }
-
-    public Page<BrewOutdatedPivot> getBrewOutdatedPivotList(int page) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("lastModifiedDate"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        Page<BrewOutdatedPivot> result = brewOutdatedPivotRepository.findAll(pageable);
         return result;
     }
 
