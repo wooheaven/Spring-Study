@@ -22,19 +22,6 @@ import java.util.concurrent.ExecutionException;
 public class BrewController {
     private final BrewService brewService;
 
-    @GetMapping("outdated")
-    public String outdated() throws Exception {
-        brewService.outdated();
-        return "redirect:/brew/outdatedList";
-    }
-
-    @GetMapping("outdatedList")
-    public String outdatedList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-        Page<BrewOutdated> paging = this.brewService.getBrewOutdatedList(page);
-        model.addAttribute("paging", paging);
-        return "brew_outdated_list";
-    }
-
     @GetMapping("outdatedPivot")
     public String outdatedPivot() throws Exception {
         brewService.outdatedPivot();

@@ -1,5 +1,22 @@
 package com.mysite.brew.service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mysite.brew.model.BrewDeps;
+import com.mysite.brew.model.BrewOutdated;
+import com.mysite.brew.model.BrewOutdatedPivot;
+import com.mysite.brew.repository.BrewDepsRepository;
+import com.mysite.brew.repository.BrewOutdatedPivotRepository;
+import com.mysite.brew.repository.BrewOutdatedRepository;
+import com.mysite.brew.shell.TerminalStreamCallable;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,38 +28,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mysite.brew.model.BrewDeps;
-import com.mysite.brew.model.BrewOutdated;
-import com.mysite.brew.model.BrewOutdatedPivot;
-import com.mysite.brew.repository.BrewDepsRepository;
-import com.mysite.brew.repository.BrewOutdatedPivotRepository;
-import com.mysite.brew.repository.BrewOutdatedRepository;
-import com.mysite.brew.shell.TerminalStreamCallable;
-
-import lombok.RequiredArgsConstructor;
-
 @RequiredArgsConstructor
 @Service
 public class BrewService {
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     private final BrewDepsRepository brewDepsRepository;
-
-    private List<String> updateRunByProcessBuilder(String command)
-            throws IOException, InterruptedException, ExecutionException {
-        return brewCommandRunByProcessBuilder(command);
-    }
 
     private List<String> brewCommandRunByProcessBuilder(String command)
             throws IOException, InterruptedException, ExecutionException {
@@ -73,35 +64,6 @@ public class BrewService {
         return result;
     }
 
-    public void outdated() throws Exception {
-        // run outdated
-        List<String> resultList = outdatedRunByProcessBuilder("/home/linuxbrew/.linuxbrew/bin/brew outdated --json");
-
-        // read outdated from resultList
-        BrewOutdated brewOutdated = new BrewOutdated();
-        String content = "";
-        for (String myLine : resultList) {
-            if (myLine.length() > 0) {
-                content += myLine;
-                content += "\n";
-            }
-        }
-        content = content.replaceAll("conten\n$", "");
-        JsonObject jsonObject = (JsonObject) readJSON(content);
-        JsonArray formulae = (JsonArray) jsonObject.get("formulae");
-        Gson gson = new GsonBuilder().create();
-        String formulaeString = gson.toJson(formulae);
-        brewOutdated.getProperties().put("formulae", formulaeString);
-
-        // write outdated to table
-        this.brewOutdatedRepository.save(brewOutdated);
-    }
-
-    private List<String> outdatedRunByProcessBuilder(String command)
-            throws IOException, InterruptedException, ExecutionException {
-        return brewCommandRunByProcessBuilder(command);
-    }
-
     private Object readJSON(String path) {
         Object result = null;
         if (path.charAt(0) == '{') {
@@ -112,19 +74,6 @@ public class BrewService {
             result = jsonArray;
         }
         return result;
-    }
-
-    public Page<BrewOutdated> getBrewOutdatedList(int page) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("id"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        Page<BrewOutdated> result = brewOutdatedRepository.findAll(pageable);
-        return result;
-    }
-
-    public void cleanup() throws IOException, InterruptedException, ExecutionException {
-        String command = "/home/linuxbrew/.linuxbrew/bin/brew cleanup";
-        brewCommandRunByProcessBuilder(command);
     }
 
     public void outdatedPivot() {
@@ -280,5 +229,4 @@ public class BrewService {
         Page<BrewDeps> result = brewDepsRepository.findAll(pageable);
         return result;
     }
-
 }
