@@ -10,9 +10,17 @@ test:
     - pwd
     - java -version
     - mvn -version
-    - sudo apt update && sudo apt install -y -q --allow-unauthenticated build-essential git sudo
+    - apt-get update && apt-get install -y -qq --allow-unauthenticated build-essential git curl unzip zip
     - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    - (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /root/.profile
+    - cat /root/.profile
     - source /root/.profile
+    - brew list
+    - curl -s https://get.sdkman.io | bash
+    - (echo; echo 'source $HOME/.sdkman/bin/sdkman-init.sh') >> /root/.profile
+    - cat /root/.profile
+    - source /root/.profile # source $HOME/.sdkman/bin/sdkman-init.sh
+    - sdk version
     - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn clean compile --quiet
   script:
     - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn test --quiet

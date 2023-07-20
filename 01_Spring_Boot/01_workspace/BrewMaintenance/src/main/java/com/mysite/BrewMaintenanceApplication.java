@@ -1,4 +1,4 @@
-package com.mysite.brew;
+package com.mysite;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

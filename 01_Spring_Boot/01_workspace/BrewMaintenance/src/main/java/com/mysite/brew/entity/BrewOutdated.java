@@ -1,5 +1,6 @@
 package com.mysite.brew.entity;
 
+import com.mysite.common.entity.CommonLocalDateTime;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;

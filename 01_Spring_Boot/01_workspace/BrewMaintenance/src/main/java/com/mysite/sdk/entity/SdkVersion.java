@@ -1,4 +1,4 @@
-package com.mysite.brew.entity;
+package com.mysite.sdk.entity;
 
 import com.mysite.common.entity.CommonLocalDateTime;
 import jakarta.persistence.*;
@@ -8,11 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(schema = "public", name = "brew_update")
-public class BrewUpdate extends CommonLocalDateTime {
+@Table(schema = "public", name = "sdk_version")
+public class SdkVersion extends CommonLocalDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "brew_update_id")
+    @Column(name = "sdk_version_id")
     private Long id;
 
     @Column(columnDefinition = "TEXT")

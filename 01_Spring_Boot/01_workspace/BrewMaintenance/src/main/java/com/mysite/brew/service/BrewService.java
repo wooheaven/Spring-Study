@@ -10,6 +10,7 @@ import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.shell.TerminalStreamCallable;
+import com.mysite.common.service.CommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,26 +41,27 @@ public class BrewService {
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     private final BrewDepsRepository brewDepsRepository;
+    private final CommonService commonService;
 
     @Autowired
     public BrewService(BrewUpdateRepository brewUpdateRepository, BrewOutdatedRepository brewOutdatedRepository,
                        BrewOutdatedPivotRepository brewOutdatedPivotRepository,
-                       BrewDepsRepository brewDepsRepository) {
+                       BrewDepsRepository brewDepsRepository, CommonService commonService) {
         this.brewUpdateRepository = brewUpdateRepository;
         this.brewOutdatedRepository = brewOutdatedRepository;
         this.brewOutdatedPivotRepository = brewOutdatedPivotRepository;
         this.brewDepsRepository = brewDepsRepository;
+        this.commonService = commonService;
     }
 
     public void update() throws Exception {
         // run update
         List<String> lineList = new ArrayList<>();
         while (0 == lineList.size()) {
-            lineList = runByProcessBuilder(brewUpdate);
+            lineList = this.commonService.runByProcessBuilder(brewUpdate);
         }
 
         // read update
-        BrewUpdate brewUpdate = new BrewUpdate();
         String content = "";
         for (String myLine : lineList) {
             if (myLine.length() > 0) {
@@ -70,44 +72,21 @@ public class BrewService {
         content = content.replaceAll("\n$", "");
 
         // write update to table
+        BrewUpdate brewUpdate = new BrewUpdate();
         brewUpdate.setContent(content);
         this.brewUpdateRepository.save(brewUpdate);
-    }
-
-    private List<String> runByProcessBuilder(String command) throws Exception {
-        boolean isLinux = System.getProperty("os.name").toLowerCase().startsWith("linux");
-        ProcessBuilder builder = new ProcessBuilder();
-        if (isLinux) {
-            builder.command("/bin/bash", "-c",
-                    "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\" && " + command);
-            builder.directory(new File("/home/linuxbrew"));
-        } else {
-            builder.command("bash.exe", "-c", command);
-        }
-        Process process = builder.start();
-        List<String> terminalOutput = new ArrayList<>();
-        TerminalStreamCallable terminalExecutor = new TerminalStreamCallable(process.getInputStream(), terminalOutput);
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future<List<String>> listFuture = executorService.submit(terminalExecutor);
-
-        log.info(String.format("command is executed : %s", command));
-        int exitCode = process.waitFor(); /* 0 is normal termination */
-        System.out.println(exitCode + " = exitCode : 0 is normal termination");
-
-        List<String> result = listFuture.get(); /* wait until terminalExecutor is finished */
-        return result;
     }
 
     public Page<BrewUpdate> getBrewUpdateList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return brewUpdateRepository.findAll(pageable);
+        return this.brewUpdateRepository.findAll(pageable);
     }
 
     public void outdated() throws Exception {
         // run outdated
-        List<String> lineList = runByProcessBuilder(brewOutdated);
+        List<String> lineList = this.commonService.runByProcessBuilder(brewOutdated);
 
         // read outdated
         BrewOutdated brewOutdated = new BrewOutdated();
@@ -183,10 +162,19 @@ public class BrewService {
         // insert BrewDeps from BrewOutdatedPivot
         for (BrewOutdatedPivot brewOutdatedPivot : brewOutdatedPivotList) {
             String myRootNode = brewOutdatedPivot.getName();
+            if (myRootNode.equals("go")) {
+                System.out.println("test");
+            }
             // run deps
-            List<String> resultList = runByProcessBuilder(brewDeps + myRootNode);
+            List<String> resultList = this.commonService.runByProcessBuilder(brewDeps + myRootNode);
 
             // read deps from resultList
+            if (resultList.get(0).equals("digraph {")) {
+                resultList.remove(0);
+            }
+            if (resultList.get(resultList.size()-1).equals("}")) {
+                resultList.remove(resultList.size()-1);
+            }
             String content = "";
             for (String myLine : resultList) {
                 if (myLine.length() > 0) {
@@ -198,8 +186,6 @@ public class BrewService {
             content = content.replaceAll("  \"", "");
             content = content.replaceAll("\" -> \"", " ");
             content = content.replaceAll("\"", "");
-            content = content.replaceAll("digraph \\{\n", "");
-            content = content.replaceAll("\n\\}", "");
 
             // save deps from content
             if (content.length() == 0) {
@@ -213,6 +199,9 @@ public class BrewService {
                 for (String myLine : content.split("\n")) {
                     String[] mySplits = myLine.split(" ");
                     String myParentNode = mySplits[0];
+                    if (mySplits.length != 2) {
+                        System.out.println("test");
+                    }
                     String myChildNode = mySplits[1];
                     BrewDeps brewDeps = new BrewDeps();
                     brewDeps.setRootNode(myRootNode);
@@ -295,10 +284,10 @@ public class BrewService {
     }
 
     public void upgrade(String name) throws Exception {
-        runByProcessBuilder(brewUpgrade + name);
+        this.commonService.runByProcessBuilder(brewUpgrade + name);
     }
 
     public void cleanup() throws Exception {
-        runByProcessBuilder(brewClean);
+        this.commonService.runByProcessBuilder(brewClean);
     }
 }
