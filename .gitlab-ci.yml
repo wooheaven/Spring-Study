@@ -1,20 +1,31 @@
 stages:
+  - build
   - test
 
+build:
+  image: docker
+  services:
+    - docker:dind
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker build -t $CI_REGISTRY_IMAGE .
+    - docker push $CI_REGISTRY_IMAGE 
+#  rules:
+#    - if: $CI_REGISTRY_SOURCE == "schedule"
+
 test:
-  image: maven:3.9.3-eclipse-temurin-17 # based on ubuntu 22.04
+  image: $CI_REGISTRY_IMAGE # maven:3.9.3-eclipse-temurin-17 # based on ubuntu 22.04
   stage: test
   variables:
-    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+#    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   before_script:
     - pwd
     - java -version
     - mvn -version
-    - apt-get update && apt-get install -y -qq --allow-unauthenticated build-essential git curl unzip zip
-    - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    - (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /root/.profile
-    - cat /root/.profile
-    - source /root/.profile
+#    - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#    - (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /root/.profile
+#    - cat /root/.profile
+#    - source /root/.profile
     - brew list
     - curl -s https://get.sdkman.io | bash
     - (echo; echo 'source $HOME/.sdkman/bin/sdkman-init.sh') >> /root/.profile
