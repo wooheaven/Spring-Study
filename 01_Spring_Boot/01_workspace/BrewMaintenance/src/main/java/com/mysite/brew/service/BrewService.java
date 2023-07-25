@@ -9,7 +9,6 @@ import com.mysite.brew.repository.BrewDepsRepository;
 import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
-import com.mysite.brew.shell.TerminalStreamCallable;
 import com.mysite.common.service.CommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @Service
 public class BrewService {
@@ -162,9 +156,6 @@ public class BrewService {
         // insert BrewDeps from BrewOutdatedPivot
         for (BrewOutdatedPivot brewOutdatedPivot : brewOutdatedPivotList) {
             String myRootNode = brewOutdatedPivot.getName();
-            if (myRootNode.equals("go")) {
-                System.out.println("test");
-            }
             // run deps
             List<String> resultList = this.commonService.runByProcessBuilder(brewDeps + myRootNode);
 
@@ -199,9 +190,6 @@ public class BrewService {
                 for (String myLine : content.split("\n")) {
                     String[] mySplits = myLine.split(" ");
                     String myParentNode = mySplits[0];
-                    if (mySplits.length != 2) {
-                        System.out.println("test");
-                    }
                     String myChildNode = mySplits[1];
                     BrewDeps brewDeps = new BrewDeps();
                     brewDeps.setRootNode(myRootNode);
@@ -246,27 +234,28 @@ public class BrewService {
 
         // update sortNumber
         List<String> rootNodeList = brewDepsRepository.findGroupByRootNodeWithCustom();
-        rootNodeList = sortBydependency(rootNodeList);
+        rootNodeList = sortByDependency(rootNodeList);
         List<BrewDeps> brewDepsList = brewDepsRepository.updateSortNumberByCustom(rootNodeList);
         for (BrewDeps myBrewDeps : brewDepsList) {
             this.brewDepsRepository.save(myBrewDeps);
         }
     }
 
-    private List<String> sortBydependency(List<String> rootNodeList) {
+    private List<String> sortByDependency(List<String> rootNodeList) {
         List<String> result = null;
         if (1 == rootNodeList.size()) {
             result = rootNodeList;
         } else {
             int rootNodeListSize = rootNodeList.size();
-            for (int i = 0; i < rootNodeListSize - 1; i++) {
-                for (int j = i + 1; j < rootNodeListSize; j++) {
+            for (int i = 0; i < rootNodeListSize - 2; i++) {
+                for (int j = i + 1; j < rootNodeListSize - 1; j++) {
                     String iRootNode = rootNodeList.get(i);
                     String jRootNode = rootNodeList.get(j);
-                    Integer count = this.brewDepsRepository.countByRootNodeAndChildNode(jRootNode, iRootNode);
+                    Integer count = this.brewDepsRepository.countByRootNodeAndChildNode(iRootNode, jRootNode);
                     if (0 < count) {
-                        Collections.swap(rootNodeList, i, j);
-                        rootNodeList = sortBydependency(rootNodeList);
+                        rootNodeList.remove(j);
+                        rootNodeList.add(i, jRootNode);
+                        rootNodeList = sortByDependency(rootNodeList);
                     }
                 }
             }
