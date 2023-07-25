@@ -26,4 +26,5 @@ public interface BrewDepsRepository extends JpaRepository<BrewDeps, Long>, Custo
 
     Integer countByRootNodeAndChildNode(String myRootNode, String myChildNode);
 
+    List<BrewDeps> findAllByRootNode(String rootNode);
 }

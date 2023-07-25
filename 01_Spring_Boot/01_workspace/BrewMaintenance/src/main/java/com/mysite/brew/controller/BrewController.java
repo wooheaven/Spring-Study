@@ -79,7 +79,13 @@ public class BrewController {
     @GetMapping("/upgrade/{name}")
     public String upgrade(@PathVariable("name") String name) throws Exception {
         brewService.upgrade(name);
-        return "redirect:/";
+        return "redirect:/brew/delete/{name}";
+    }
+
+    @GetMapping("/delete/{name}")
+    public String delete(@PathVariable("name") String name) {
+        brewService.delete(name);
+        return "redirect:/brew/depsList";
     }
 
     @GetMapping("cleanup")

@@ -276,6 +276,13 @@ public class BrewService {
         this.commonService.runByProcessBuilder(brewUpgrade + name);
     }
 
+    public void delete(String rootNode) {
+        List<BrewDeps> brewDepsList = this.brewDepsRepository.findAllByRootNode(rootNode);
+        for (BrewDeps myBrewDeps : brewDepsList) {
+            this.brewDepsRepository.delete(myBrewDeps);
+        }
+    }
+
     public void cleanup() throws Exception {
         this.commonService.runByProcessBuilder(brewClean);
     }
