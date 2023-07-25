@@ -1,5 +1,6 @@
 package com.mysite.sdk.controller;
 
+import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
 import com.mysite.sdk.service.SdkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,19 @@ public class SdkController {
     @Autowired
     public SdkController(SdkService sdkService) {
         this.sdkService = sdkService;
+    }
+
+    @GetMapping("update")
+    public String update() throws Exception {
+        this.sdkService.update();
+        return "redirect:/sdk/updateList";
+    }
+
+    @GetMapping("updateList")
+    public String updateList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<SdkUpdate> paging = this.sdkService.getSdkUpdateList(page);
+        model.addAttribute("paging", paging);
+        return "sdk/sdk_update_list";
     }
 
     @GetMapping("version")

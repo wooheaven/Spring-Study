@@ -13,7 +13,9 @@ import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.service.BrewService;
+import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
+import com.mysite.sdk.repository.SdkUpdateRepository;
 import com.mysite.sdk.repository.SdkVersionRepository;
 import com.mysite.sdk.service.SdkService;
 import org.junit.jupiter.api.*;
@@ -176,6 +178,8 @@ class BrewMaintenanceApplicationTests {
     @SpringBootTest
     class SdkTest {
         @Autowired
+        private SdkUpdateRepository sdkUpdateRepository;
+        @Autowired
         private SdkVersionRepository sdkVersionRepository;
         @Autowired
         private SdkService sdkService;
@@ -184,10 +188,34 @@ class BrewMaintenanceApplicationTests {
         @Test
         void contextLoads() {
             assert sdkService != null;
+            assert sdkUpdateRepository != null;
             assert sdkVersionRepository != null;
         }
 
         @Order(2)
+        @Test
+        void SdkService_update_test() throws Exception {
+            // before
+            long before = this.sdkVersionRepository.count();
+            assert 0 == before;
+
+            // do
+            this.sdkService.update();
+
+            // after
+            long after = this.sdkUpdateRepository.count();
+            assert 1 == after;
+
+            // assert
+            Optional<SdkUpdate> optional = sdkUpdateRepository.findById(after);
+            String content = "";
+            if (optional.isPresent()) {
+                content = optional.get().getContent();
+            }
+            assert content.contains("candidates");
+        }
+
+        @Order(3)
         @Test
         void SdkService_version_test() throws Exception {
             // before

@@ -12,25 +12,6 @@ import com.mysite.robot.MyRobot;
 @RequestMapping("/sdk")
 @Controller
 public class SdkController {
-
-    @GetMapping("/version")
-    public String version() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100);
-        myRobot.keyboardPressRelease(1000, "sdk version");
-        myRobot.goToFireFox(1000);
-        return "redirect:/";
-    }
-
-    @GetMapping("/update")
-    public String update() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100);
-        myRobot.keyboardPressRelease(1000, "sdk update");
-        myRobot.goToFireFox(1000);
-        return "redirect:/";
-    }
-
     @GetMapping("/list/java")
     public String listJava() throws AWTException {
         MyRobot myRobot = new MyRobot();
