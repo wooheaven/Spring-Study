@@ -12,14 +12,6 @@ import com.mysite.robot.MyRobot;
 @RequestMapping("/sdk")
 @Controller
 public class SdkController {
-    @GetMapping("/list/java")
-    public String listJava() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100);
-        myRobot.keyboardPressRelease(1000, "sdk list java");
-        return "redirect:/";
-    }
-    
     @GetMapping("/candidates/java")
     public String candidateJava()throws AWTException {
         MyRobot myRobot = new MyRobot();

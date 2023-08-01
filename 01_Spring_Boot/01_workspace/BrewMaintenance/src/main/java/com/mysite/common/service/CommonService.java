@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,13 +14,11 @@ import java.util.concurrent.Future;
 @Service
 public class CommonService {
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
-    public List<String> runByProcessBuilder(String command) throws Exception {
+    public List<String> getLineListByTerminalOut(String command) throws Exception {
         boolean isLinux = System.getProperty("os.name").toLowerCase().startsWith("linux");
         ProcessBuilder builder = new ProcessBuilder();
         if (isLinux) {
-            builder.command("/bin/bash", "-c",
-                    "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\" && " + command);
-            builder.directory(new File("/home/linuxbrew"));
+            builder.command("/bin/bash", "-c", command);
         } else {
             builder.command("C:\\Windows\\System32\\bash.exe", "-c", command);
         }

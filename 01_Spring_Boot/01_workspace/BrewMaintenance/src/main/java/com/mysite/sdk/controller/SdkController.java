@@ -1,5 +1,6 @@
 package com.mysite.sdk.controller;
 
+import com.mysite.sdk.entity.SdkList;
 import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
 import com.mysite.sdk.service.SdkService;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -45,5 +47,13 @@ public class SdkController {
         Page<SdkVersion> paging = this.sdkService.getSdkVersionList(page);
         model.addAttribute("paging", paging);
         return "sdk/sdk_version_list";
+    }
+    @GetMapping("list/{name}")
+    public String list(@PathVariable("name") String name,
+                       Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+        this.sdkService.list(name);
+        Page<SdkList> paging = this.sdkService.getSdkList(page);
+        model.addAttribute("paging", paging);
+        return "sdk/sdk_list";
     }
 }

@@ -18,7 +18,6 @@ public class TerminalStreamCallable implements Callable<List<String>> {
     @Override
     public List<String> call() throws Exception {
         new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(line -> {
-            System.out.println(line);
             this.lines.add(line);
         });
         return this.lines;

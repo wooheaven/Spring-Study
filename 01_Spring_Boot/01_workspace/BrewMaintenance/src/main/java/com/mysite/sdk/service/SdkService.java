@@ -1,8 +1,10 @@
 package com.mysite.sdk.service;
 
 import com.mysite.common.service.CommonService;
+import com.mysite.sdk.entity.SdkList;
 import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
+import com.mysite.sdk.repository.SdkListRepository;
 import com.mysite.sdk.repository.SdkUpdateRepository;
 import com.mysite.sdk.repository.SdkVersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,27 +19,31 @@ import java.util.List;
 
 @Service
 public class SdkService {
-    private static final String sdkInit = "source \"$HOME/.sdkman/bin/sdkman-init.sh\" && ";
+    private static final String sdkInit = "source $HOME/.sdkman/bin/sdkman-init.sh && ";
     private static final String sdkUpdate = sdkInit + "sdk update";
     private static final String sdkVersion = sdkInit + "sdk version";
+    private static final String sdkList = sdkInit + "PAGER=cat sdk list %s | grep '|' | sed 's/ //g' | sed 's/|/,/g'";
     private final CommonService commonService;
     private final SdkUpdateRepository sdkUpdateRepository;
     private final SdkVersionRepository sdkVersionRepository;
+    private final SdkListRepository sdkListRepository;
 
     @Autowired
     public SdkService(CommonService commonService,
                       SdkUpdateRepository sdkUpdateRepository,
-                      SdkVersionRepository sdkVersionRepository) {
+                      SdkVersionRepository sdkVersionRepository,
+                      SdkListRepository sdkListRepository) {
         this.commonService = commonService;
         this.sdkUpdateRepository = sdkUpdateRepository;
         this.sdkVersionRepository = sdkVersionRepository;
+        this.sdkListRepository = sdkListRepository;
     }
 
     public void update() throws Exception {
         // run sdk update
         List<String> lineList = new ArrayList<>();
         while (0 == lineList.size()) {
-            lineList = this.commonService.runByProcessBuilder(sdkUpdate);
+            lineList = this.commonService.getLineListByTerminalOut(sdkUpdate);
         }
 
         // read sdk update
@@ -75,7 +81,7 @@ public class SdkService {
         // run sdk version
         List<String> lineList = new ArrayList<>();
         while (0 == lineList.size()) {
-            lineList = this.commonService.runByProcessBuilder(sdkVersion);
+            lineList = this.commonService.getLineListByTerminalOut(sdkVersion);
         }
 
         // read sdk version
@@ -103,5 +109,59 @@ public class SdkService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.sdkVersionRepository.findAll(pageable);
+    }
+
+    public void list(String name) throws Exception {
+        // delete sdk list
+        this.sdkListRepository.deleteAll();
+
+        // run sdk list
+        List<String> lineList = new ArrayList<>();
+        while (0 == lineList.size()) {
+            String cmd = String.format(sdkList, name);
+            lineList = this.commonService.getLineListByTerminalOut(cmd);
+        }
+
+        // read sdk list
+        String content = "";
+        String myVendor = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                String[] fields = myLine.split(",");
+                if (fields[0].length() > 0) {
+                    myVendor = fields[0];
+                } else {
+                    fields[0] = myVendor;
+                    myLine = String.join(",", fields);
+                }
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+        content = content.replaceAll(">>>", "current");
+
+        // save sdk version from content
+        for (String myLine : content.split("\n")) {
+            if (!myLine.contains("Vendor")) {
+                String[] fields = myLine.split(",");
+                SdkList sdkList = new SdkList();
+                sdkList.setLib("java");
+                sdkList.setVendor(fields[0]);
+                sdkList.setUse(fields[1]);
+                sdkList.setVersion(fields[2]);
+                sdkList.setDist(fields[3]);
+                sdkList.setStatus(fields[4]);
+                sdkList.setIdentifier(fields[5]);
+                this.sdkListRepository.save(sdkList);
+            }
+        }
+    }
+
+    public Page<SdkList> getSdkList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        return this.sdkListRepository.findAll(pageable);
     }
 }

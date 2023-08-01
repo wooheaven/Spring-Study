@@ -13,8 +13,10 @@ import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.service.BrewService;
+import com.mysite.sdk.entity.SdkList;
 import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
+import com.mysite.sdk.repository.SdkListRepository;
 import com.mysite.sdk.repository.SdkUpdateRepository;
 import com.mysite.sdk.repository.SdkVersionRepository;
 import com.mysite.sdk.service.SdkService;
@@ -182,6 +184,8 @@ class BrewMaintenanceApplicationTests {
         @Autowired
         private SdkVersionRepository sdkVersionRepository;
         @Autowired
+        private SdkListRepository sdkListRepository;
+        @Autowired
         private SdkService sdkService;
 
         @Order(1)
@@ -190,6 +194,7 @@ class BrewMaintenanceApplicationTests {
             assert sdkService != null;
             assert sdkUpdateRepository != null;
             assert sdkVersionRepository != null;
+            assert sdkListRepository != null;
         }
 
         @Order(2)
@@ -230,7 +235,7 @@ class BrewMaintenanceApplicationTests {
             assert 1 == after;
 
             // assert
-            Optional<SdkVersion> optional = sdkVersionRepository.findById(after);
+            Optional<SdkVersion> optional = this.sdkVersionRepository.findById(after);
             String content = "";
             if (optional.isPresent()) {
                 content = optional.get().getContent();
@@ -238,6 +243,38 @@ class BrewMaintenanceApplicationTests {
             assert content.contains("SDKMAN!");
             assert content.contains("script:");
             assert content.contains("native:");
+        }
+
+        @Order(4)
+        @Test
+        void SdkService_list_test() throws Exception {
+            // before
+            long before = this.sdkListRepository.count();
+            assert 0 == before;
+
+            // do
+            this.sdkService.list("java");
+
+            // after
+            long after = this.sdkListRepository.count();
+            assert  1 < after;
+
+            // assert
+            Optional<SdkList> optional = this.sdkListRepository.findById(1L);
+            String lib = "";
+            String vendor = "";
+            String version = "";
+            String dist = "";
+            if (optional.isPresent()) {
+                lib = optional.get().getLib();
+                vendor = optional.get().getVendor();
+                version = optional.get().getVersion();
+                dist = optional.get().getDist();
+            }
+            assert lib.equals("java");
+            assert 0 < vendor.length();
+            assert 0 < version.length();
+            assert 0 < dist.length();
         }
     }
 }

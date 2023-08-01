@@ -25,11 +25,12 @@ import java.util.Map;
 
 @Service
 public class BrewService {
-    private static final String brewUpdate = "/home/linuxbrew/.linuxbrew/bin/brew update";
-    private static final String brewOutdated = "/home/linuxbrew/.linuxbrew/bin/brew outdated --json";
-    private static final String brewDeps = "/home/linuxbrew/.linuxbrew/bin/brew deps --graph --dot ";
-    private static final String brewUpgrade = "/home/linuxbrew/.linuxbrew/bin/brew upgrade ";
-    private static final String brewClean = "/home/linuxbrew/.linuxbrew/bin/brew cleanup";
+    private static final String brewInit = "/home/linuxbrew/.linuxbrew/bin/";
+    private static final String brewUpdate = brewInit + "brew update";
+    private static final String brewOutdated = brewInit + "brew outdated --json";
+    private static final String brewDeps = brewInit + "brew deps --graph --dot ";
+    private static final String brewUpgrade = brewInit + "brew upgrade ";
+    private static final String brewClean = brewInit + "brew cleanup";
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
@@ -52,7 +53,7 @@ public class BrewService {
         // run update
         List<String> lineList = new ArrayList<>();
         while (0 == lineList.size()) {
-            lineList = this.commonService.runByProcessBuilder(brewUpdate);
+            lineList = this.commonService.getLineListByTerminalOut(brewUpdate);
         }
 
         // read update
@@ -80,7 +81,7 @@ public class BrewService {
 
     public void outdated() throws Exception {
         // run outdated
-        List<String> lineList = this.commonService.runByProcessBuilder(brewOutdated);
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewOutdated);
 
         // read outdated
         BrewOutdated brewOutdated = new BrewOutdated();
@@ -157,7 +158,7 @@ public class BrewService {
         for (BrewOutdatedPivot brewOutdatedPivot : brewOutdatedPivotList) {
             String myRootNode = brewOutdatedPivot.getName();
             // run deps
-            List<String> resultList = this.commonService.runByProcessBuilder(brewDeps + myRootNode);
+            List<String> resultList = this.commonService.getLineListByTerminalOut(brewDeps + myRootNode);
 
             // read deps from resultList
             if (resultList.get(0).equals("digraph {")) {
@@ -273,7 +274,7 @@ public class BrewService {
     }
 
     public void upgrade(String name) throws Exception {
-        this.commonService.runByProcessBuilder(brewUpgrade + name);
+        this.commonService.getLineListByTerminalOut(brewUpgrade + name);
     }
 
     public void delete(String rootNode) {
@@ -284,6 +285,6 @@ public class BrewService {
     }
 
     public void cleanup() throws Exception {
-        this.commonService.runByProcessBuilder(brewClean);
+        this.commonService.getLineListByTerminalOut(brewClean);
     }
 }
