@@ -13,9 +13,12 @@ import com.mysite.brew.repository.BrewOutdatedPivotRepository;
 import com.mysite.brew.repository.BrewOutdatedRepository;
 import com.mysite.brew.repository.BrewUpdateRepository;
 import com.mysite.brew.service.BrewService;
+import com.mysite.common.service.CommonService;
+import com.mysite.sdk.entity.SdkCandidates;
 import com.mysite.sdk.entity.SdkList;
 import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
+import com.mysite.sdk.repository.SdkCandidatesRepository;
 import com.mysite.sdk.repository.SdkListRepository;
 import com.mysite.sdk.repository.SdkUpdateRepository;
 import com.mysite.sdk.repository.SdkVersionRepository;
@@ -26,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +58,8 @@ class BrewMaintenanceApplicationTests {
         private BrewDepsRepository brewDepsRepository;
         @Autowired
         private BrewService brewService;
+        @Autowired
+        private CommonService commonService;
         @Mock
         private BrewService brewServiceMock;
 
@@ -61,6 +67,7 @@ class BrewMaintenanceApplicationTests {
         @Test
         void contextLoads() {
             assert brewService != null;
+            assert commonService != null;
             assert brewServiceMock != null;
             assert brewUpdateRepository != null;
             assert brewOutdatedRepository != null;
@@ -162,7 +169,7 @@ class BrewMaintenanceApplicationTests {
             File testFile = new File(classLoader.getResource("brew_outdated.json").getFile());
             String content = Files.lines(testFile.toPath()).collect(Collectors.joining(System.lineSeparator()));
 
-            JsonObject jsonObject = (JsonObject) this.brewService.readJSON(content);
+            JsonObject jsonObject = (JsonObject) this.commonService.readJSON(content);
             JsonArray formulae = (JsonArray) jsonObject.get("formulae");
             Gson gson = new GsonBuilder().create();
             String formulaeString = gson.toJson(formulae);
@@ -186,6 +193,8 @@ class BrewMaintenanceApplicationTests {
         @Autowired
         private SdkListRepository sdkListRepository;
         @Autowired
+        private SdkCandidatesRepository sdkCandidatesRepository;
+        @Autowired
         private SdkService sdkService;
 
         @Order(1)
@@ -195,6 +204,7 @@ class BrewMaintenanceApplicationTests {
             assert sdkUpdateRepository != null;
             assert sdkVersionRepository != null;
             assert sdkListRepository != null;
+            assert sdkCandidatesRepository != null;
         }
 
         @Order(2)
@@ -275,6 +285,32 @@ class BrewMaintenanceApplicationTests {
             assert 0 < vendor.length();
             assert 0 < version.length();
             assert 0 < dist.length();
+        }
+
+        @Order(5)
+        @Test
+        void SdkService_candidates_test() throws Exception {
+            // before
+            long before = this.sdkCandidatesRepository.count();
+            assert 0 == before;
+
+            // do
+            this.sdkService.getSdkCandidates();
+
+            // after
+            long after = this.sdkCandidatesRepository.count();
+            assert  1 == after;
+
+            // assert
+            Optional<SdkCandidates> optional = this.sdkCandidatesRepository.findById(1L);
+            String contents = "";
+            if (optional.isPresent()) {
+                contents = optional.get().getContent();
+            }
+            assert contents.contains("candidates");
+            assert 1 == StringUtils.countOccurrencesOf(contents, "candidates");
+            assert 1 == StringUtils.countOccurrencesOf(contents, "directories");
+            assert 1 <= StringUtils.countOccurrencesOf(contents, "directory");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.mysite.sdk.controller;
 
+import com.mysite.sdk.entity.SdkCandidates;
 import com.mysite.sdk.entity.SdkList;
 import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
@@ -55,5 +56,13 @@ public class SdkController {
         Page<SdkList> paging = this.sdkService.getSdkList(page);
         model.addAttribute("paging", paging);
         return "sdk/sdk_list";
+    }
+
+    @GetMapping("candidates")
+    public String can(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+        this.sdkService.getSdkCandidates();
+        Page<SdkCandidates> paging = this.sdkService.getSdkCandidatesList(page);
+        model.addAttribute("paging", paging);
+        return "sdk/sdk_candidates_list";
     }
 }

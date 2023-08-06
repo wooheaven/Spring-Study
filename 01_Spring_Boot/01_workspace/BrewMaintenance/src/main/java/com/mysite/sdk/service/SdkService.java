@@ -1,9 +1,12 @@
 package com.mysite.sdk.service;
 
+import com.google.gson.JsonArray;
 import com.mysite.common.service.CommonService;
+import com.mysite.sdk.entity.SdkCandidates;
 import com.mysite.sdk.entity.SdkList;
 import com.mysite.sdk.entity.SdkUpdate;
 import com.mysite.sdk.entity.SdkVersion;
+import com.mysite.sdk.repository.SdkCandidatesRepository;
 import com.mysite.sdk.repository.SdkListRepository;
 import com.mysite.sdk.repository.SdkUpdateRepository;
 import com.mysite.sdk.repository.SdkVersionRepository;
@@ -19,24 +22,29 @@ import java.util.List;
 
 @Service
 public class SdkService {
+    private static final String brewInit = "PATH=\"/home/linuxbrew/.linuxbrew/bin:${PATH}\" && ";
     private static final String sdkInit = "source $HOME/.sdkman/bin/sdkman-init.sh && ";
     private static final String sdkUpdate = sdkInit + "sdk update";
     private static final String sdkVersion = sdkInit + "sdk version";
     private static final String sdkList = sdkInit + "PAGER=cat sdk list %s | grep '|' | sed 's/ //g' | sed 's/|/,/g'";
+    private static final String sdkCandidates = sdkInit + brewInit + "tree -J -d -L 2 ~/.sdkman/candidates/ | jq -M";
     private final CommonService commonService;
     private final SdkUpdateRepository sdkUpdateRepository;
     private final SdkVersionRepository sdkVersionRepository;
     private final SdkListRepository sdkListRepository;
+    private final SdkCandidatesRepository sdkCandidatesRepository;
 
     @Autowired
     public SdkService(CommonService commonService,
                       SdkUpdateRepository sdkUpdateRepository,
                       SdkVersionRepository sdkVersionRepository,
-                      SdkListRepository sdkListRepository) {
+                      SdkListRepository sdkListRepository,
+                      SdkCandidatesRepository sdkCandidatesRepository) {
         this.commonService = commonService;
         this.sdkUpdateRepository = sdkUpdateRepository;
         this.sdkVersionRepository = sdkVersionRepository;
         this.sdkListRepository = sdkListRepository;
+        this.sdkCandidatesRepository = sdkCandidatesRepository;
     }
 
     public void update() throws Exception {
@@ -163,5 +171,37 @@ public class SdkService {
         sorts.add(Sort.Order.asc("id"));
         Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
         return this.sdkListRepository.findAll(pageable);
+    }
+
+    public void getSdkCandidates() throws Exception {
+        // run sdk candidates
+        List<String> lineList = new ArrayList<>();
+        while (0 == lineList.size()) {
+            String cmd = String.format(sdkCandidates);
+            lineList = this.commonService.getLineListByTerminalOut(cmd);
+        }
+
+        // read sdk candidates
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+        JsonArray jsonArray = (JsonArray) commonService.readJSON(content);
+
+        // save sdk candidates
+        SdkCandidates sdkCandidates = new SdkCandidates();
+        sdkCandidates.setContent(content);
+        this.sdkCandidatesRepository.save(sdkCandidates);
+    }
+
+    public Page<SdkCandidates> getSdkCandidatesList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        return this.sdkCandidatesRepository.findAll(pageable);
     }
 }

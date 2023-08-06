@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Service
 public class BrewService {
-    private static final String brewInit = "/home/linuxbrew/.linuxbrew/bin/";
+    private static final String brewInit = "PATH=\"/home/linuxbrew/.linuxbrew/bin:${PATH}\" && ";
     private static final String brewUpdate = brewInit + "brew update";
     private static final String brewOutdated = brewInit + "brew outdated --json";
     private static final String brewDeps = brewInit + "brew deps --graph --dot ";
@@ -93,7 +93,7 @@ public class BrewService {
             }
         }
         content = content.replaceAll("conten\n$", "");
-        JsonObject jsonObject = (JsonObject) readJSON(content);
+        JsonObject jsonObject = (JsonObject) commonService.readJSON(content);
         JsonArray formulae = (JsonArray) jsonObject.get("formulae");
         Gson gson = new GsonBuilder().create();
         String formulaeString = gson.toJson(formulae);
@@ -101,18 +101,6 @@ public class BrewService {
 
         // write outdated to table
         this.brewOutdatedRepository.save(brewOutdated);
-    }
-
-    public Object readJSON(String content) {
-        Object result = null;
-        if (content.charAt(0) == '{') {
-            JsonObject jsonObject = new JsonParser().parse(content).getAsJsonObject();
-            result = jsonObject;
-        } else if (content.charAt(0) == '[') {
-            JsonArray jsonArray = new JsonParser().parse(content).getAsJsonArray();
-            result = jsonArray;
-        }
-        return result;
     }
 
     public Page<BrewOutdated> getBrewOutdatedList(int page) {
@@ -128,7 +116,7 @@ public class BrewService {
         BrewOutdated myBrewOutdated = this.brewOutdatedRepository.findFirstByOrderByIdDesc();
         Map<String, String> myProperties = myBrewOutdated.getProperties();
         String myContent = myProperties.get("formulae");
-        JsonArray jsonArray = (JsonArray) readJSON(myContent);
+        JsonArray jsonArray = (JsonArray) commonService.readJSON(myContent);
         jsonArray.forEach(myJson -> {
             String myName = myJson.getAsJsonObject().get("name").getAsString();
             String myInstalledVersion = myJson.getAsJsonObject().get("installed_versions").getAsString();
