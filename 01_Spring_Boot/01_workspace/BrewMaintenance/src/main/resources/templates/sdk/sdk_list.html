@@ -18,7 +18,7 @@
     <tbody>
       <tr class="text-center" th:each="sdk_list, loop : ${paging}">
         <td style="text-align:left" th:text="${loop.index + 1}"></td>
-        <td style="text-align:left;white-space: pre-line" th:text="${sdk_list.getLib()}"></td>
+        <td style="text-align:left;white-space: pre-line" th:text="${sdk_list.lib}"></td>
         <td style="text-align:left" th:text="${#temporals.format(sdk_list.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
         <td style="text-align:left" th:text="${#temporals.format(sdk_list.lastModifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
         <td style="text-align:left;white-space: pre-line" th:text="${sdk_list.getVendor()}"></td>
@@ -26,7 +26,10 @@
         <td style="text-align:left;white-space: pre-line" th:text="${sdk_list.getVersion()}"></td>
         <td style="text-align:left;white-space: pre-line" th:text="${sdk_list.getDist()}"></td>
         <td style="text-align:left;white-space: pre-line" th:text="${sdk_list.getStatus()}"></td>
-        <td style="text-align:left;white-space: pre-line" th:text="${sdk_list.getIdentifier()}"></td>
+        <td style="text-align:left">
+          <a th:href="@{/sdk/install/{name}/{identifier}
+            (name = ${sdk_list.lib}, identifier = ${sdk_list.getIdentifier()})}" th:text="${sdk_list.getIdentifier()}"/>
+        </td>
       </tr>
     </tbody>
   </table>

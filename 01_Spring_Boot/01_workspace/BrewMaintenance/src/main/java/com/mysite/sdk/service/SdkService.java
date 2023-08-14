@@ -2,14 +2,8 @@ package com.mysite.sdk.service;
 
 import com.google.gson.JsonArray;
 import com.mysite.common.service.CommonService;
-import com.mysite.sdk.entity.SdkCandidates;
-import com.mysite.sdk.entity.SdkList;
-import com.mysite.sdk.entity.SdkUpdate;
-import com.mysite.sdk.entity.SdkVersion;
-import com.mysite.sdk.repository.SdkCandidatesRepository;
-import com.mysite.sdk.repository.SdkListRepository;
-import com.mysite.sdk.repository.SdkUpdateRepository;
-import com.mysite.sdk.repository.SdkVersionRepository;
+import com.mysite.sdk.entity.*;
+import com.mysite.sdk.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,29 +16,32 @@ import java.util.List;
 
 @Service
 public class SdkService {
-    private static final String brewInit = "PATH=\"/home/linuxbrew/.linuxbrew/bin:${PATH}\" && ";
     private static final String sdkInit = "source $HOME/.sdkman/bin/sdkman-init.sh && ";
     private static final String sdkUpdate = sdkInit + "sdk update";
     private static final String sdkVersion = sdkInit + "sdk version";
     private static final String sdkList = sdkInit + "PAGER=cat sdk list %s | grep '|' | sed 's/ //g' | sed 's/|/,/g'";
-    private static final String sdkCandidates = sdkInit + brewInit + "tree -J -d -L 2 ~/.sdkman/candidates/ | jq -M";
+    private static final String sdkCandidates = "tree -J -d -L 2 ~/.sdkman/candidates/ | jq -M";
+    private static final String sdkInstall = sdkInit + "sdk install %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
     private final CommonService commonService;
     private final SdkUpdateRepository sdkUpdateRepository;
     private final SdkVersionRepository sdkVersionRepository;
     private final SdkListRepository sdkListRepository;
     private final SdkCandidatesRepository sdkCandidatesRepository;
+    private final SdkInstallRepository sdkInstallRepository;
 
     @Autowired
     public SdkService(CommonService commonService,
                       SdkUpdateRepository sdkUpdateRepository,
                       SdkVersionRepository sdkVersionRepository,
                       SdkListRepository sdkListRepository,
-                      SdkCandidatesRepository sdkCandidatesRepository) {
+                      SdkCandidatesRepository sdkCandidatesRepository,
+                      SdkInstallRepository sdkInstallRepository) {
         this.commonService = commonService;
         this.sdkUpdateRepository = sdkUpdateRepository;
         this.sdkVersionRepository = sdkVersionRepository;
         this.sdkListRepository = sdkListRepository;
         this.sdkCandidatesRepository = sdkCandidatesRepository;
+        this.sdkInstallRepository = sdkInstallRepository;
     }
 
     public void update() throws Exception {
@@ -203,5 +200,36 @@ public class SdkService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
         return this.sdkCandidatesRepository.findAll(pageable);
+    }
+
+    public void install(String name, String identifier) throws Exception {
+        // run sdk candidates
+        List<String> lineList = new ArrayList<>();
+        while (0 == lineList.size()) {
+            String cmd = String.format(sdkInstall, name, identifier);
+            lineList = this.commonService.getLineListByTerminalOut(cmd);
+        }
+
+        // read sdk candidates
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+
+        // save sdk version from content
+        SdkInstall sdkInstall = new SdkInstall();
+        sdkInstall.setContent(content);
+        this.sdkInstallRepository.save(sdkInstall);
+    }
+
+    public Page<SdkInstall> getSdkInstallList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        return this.sdkInstallRepository.findAll(pageable);
     }
 }

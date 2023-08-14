@@ -1,9 +1,6 @@
 package com.mysite.sdk.controller;
 
-import com.mysite.sdk.entity.SdkCandidates;
-import com.mysite.sdk.entity.SdkList;
-import com.mysite.sdk.entity.SdkUpdate;
-import com.mysite.sdk.entity.SdkVersion;
+import com.mysite.sdk.entity.*;
 import com.mysite.sdk.service.SdkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -59,10 +56,24 @@ public class SdkController {
     }
 
     @GetMapping("candidates")
-    public String can(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+    public String candidates(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
         this.sdkService.getSdkCandidates();
         Page<SdkCandidates> paging = this.sdkService.getSdkCandidatesList(page);
         model.addAttribute("paging", paging);
         return "sdk/sdk_candidates_list";
+    }
+
+    @GetMapping("install/{name}/{identifier}")
+    public String install(@PathVariable("name") String name,
+                          @PathVariable("identifier") String identifier) throws Exception {
+        this.sdkService.install(name, identifier);
+        return "redirect:/sdk/install/list";
+    }
+
+    @GetMapping("install/list")
+    public String installList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<SdkInstall> paging = this.sdkService.getSdkInstallList(page);
+        model.addAttribute("paging", paging);
+        return "sdk/sdk_install_list";
     }
 }
