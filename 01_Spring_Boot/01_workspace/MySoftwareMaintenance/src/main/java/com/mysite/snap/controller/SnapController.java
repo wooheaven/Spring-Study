@@ -31,16 +31,6 @@ public class SnapController {
         return "redirect:/";
     }
 
-    @GetMapping("/refresh/list")
-    public String refreshList() throws AWTException {
-        MyRobot myRobot = new MyRobot();
-        myRobot.openTerminal(100);
-        myRobot.keyboardPressRelease(1000, "sudo snap refresh --list");
-        myRobot.keyboardPressRelease(1000, "12qwas");
-        myRobot.goToFireFox(1000);
-        return "redirect:/";
-    }
-    
     @GetMapping("/refresh/target")
     public String refreshTarget()throws AWTException {
         MyRobot myRobot = new MyRobot();

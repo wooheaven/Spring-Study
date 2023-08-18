@@ -3,7 +3,7 @@ FROM maven:3.9.3-eclipse-temurin-17
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
- && apt-get -y install build-essential procps curl file git unzip zip curl sed tree jq
+ && apt-get -y install build-essential procps curl file git unzip zip curl sed tree jq sudo
 
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 

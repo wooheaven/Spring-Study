@@ -23,6 +23,8 @@ import com.mysite.sdk.repository.SdkListRepository;
 import com.mysite.sdk.repository.SdkUpdateRepository;
 import com.mysite.sdk.repository.SdkVersionRepository;
 import com.mysite.sdk.service.SdkService;
+import com.mysite.snap.repository.SnapRefreshListRepository;
+import com.mysite.snap.service.SnapService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -267,7 +269,7 @@ class BrewMaintenanceApplicationTests {
 
             // after
             long after = this.sdkListRepository.count();
-            assert  1 < after;
+            assert 1 < after;
 
             // assert
             Optional<SdkList> optional = this.sdkListRepository.findById(1L);
@@ -299,7 +301,7 @@ class BrewMaintenanceApplicationTests {
 
             // after
             long after = this.sdkCandidatesRepository.count();
-            assert  1 == after;
+            assert 1 == after;
 
             // assert
             Optional<SdkCandidates> optional = this.sdkCandidatesRepository.findById(1L);
@@ -311,6 +313,33 @@ class BrewMaintenanceApplicationTests {
             assert 1 == StringUtils.countOccurrencesOf(contents, "candidates");
             assert 1 == StringUtils.countOccurrencesOf(contents, "directories");
             assert 1 <= StringUtils.countOccurrencesOf(contents, "directory");
+        }
+    }
+
+    @Nested
+    @DisplayName("Snap")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @SpringBootTest
+    class SnapTest {
+        @Autowired
+        private SnapRefreshListRepository snapRefreshListRepository;
+        @Mock
+        private SnapService snapServiceMock;
+
+        @Order(1)
+        @Test
+        void contextLoads() {
+            assert this.snapServiceMock != null;
+            assert this.snapRefreshListRepository != null;
+        }
+
+        @Order(2)
+        @Test
+        void snap_refresh_list_test() throws Exception {
+            doNothing().when(this.snapServiceMock).refreshList();
+            // do
+            this.snapServiceMock.refreshList();
+            verify(this.snapServiceMock, times(1)).refreshList();
         }
     }
 }

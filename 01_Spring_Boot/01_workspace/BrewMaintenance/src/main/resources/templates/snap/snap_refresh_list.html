@@ -6,21 +6,15 @@
         <th style="text-align:left; width:4%">번호</th>
         <th style="text-align:left; width:13%">createdDate</th>
         <th style="text-align:left; width:13%">lastModifiedDate</th>
-        <th style="text-align:left; width:10%">name</th>
-        <th style="text-align:left; width:10%">installed_version</th>
-        <th style="text-align:left; width:10%">current_version</th>
-        <th style="text-align:left; width:5%">pinned</th>
+        <th style="text-align:left; width:70%">content</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="text-center" th:each="brew_outdated_pivot, loop : ${paging}">
+      <tr class="text-center" th:each="snap_refresh_list, loop : ${paging}">
         <td style="text-align:left" th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
-        <td style="text-align:left" th:text="${#temporals.format(brew_outdated_pivot.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td style="text-align:left" th:text="${#temporals.format(brew_outdated_pivot.lastModifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td style="text-align:left" th:text="${brew_outdated_pivot.name}"></td>
-        <td style="text-align:left" th:text="${brew_outdated_pivot.installedVersion}"></td>
-        <td style="text-align:left" th:text="${brew_outdated_pivot.currentVersion}"></td>
-        <td style="text-align:left" th:text="${brew_outdated_pivot.pinned}"></td>
+        <td style="text-align:left" th:text="${#temporals.format(snap_refresh_list.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td style="text-align:left" th:text="${#temporals.format(snap_refresh_list.lastModifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.content}"></td>
       </tr>
     </tbody>
   </table>
