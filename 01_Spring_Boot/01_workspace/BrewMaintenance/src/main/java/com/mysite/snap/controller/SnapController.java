@@ -20,9 +20,14 @@ public class SnapController {
         this.snapService = snapService;
     }
 
-    @GetMapping("/refresh/list")
-    public String refreshList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+    @GetMapping("/refreshList")
+    public String refreshList() throws Exception {
         this.snapService.refreshList();
+        return "redirect:/snap/refreshList/list";
+    }
+
+    @GetMapping("/refreshList/list")
+    public String refreshListList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
         Page<SnapRefreshList> paging = this.snapService.getSnapRefreshList(page);
         model.addAttribute("paging", paging);
         return "/snap/snap_refresh_list";
