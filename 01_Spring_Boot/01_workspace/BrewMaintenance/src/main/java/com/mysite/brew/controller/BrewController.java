@@ -1,9 +1,6 @@
 package com.mysite.brew.controller;
 
-import com.mysite.brew.entity.BrewDeps;
-import com.mysite.brew.entity.BrewOutdated;
-import com.mysite.brew.entity.BrewOutdatedPivot;
-import com.mysite.brew.entity.BrewUpdate;
+import com.mysite.brew.entity.*;
 import com.mysite.brew.service.BrewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -91,6 +88,13 @@ public class BrewController {
     @GetMapping("cleanup")
     public String cleanup() throws Exception {
         brewService.cleanup();
-        return "redirect:/";
+        return "redirect:/brew/cleanup/list";
+    }
+
+    @GetMapping("cleanup/list")
+    public String cleanupList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewClean> paging = this.brewService.getBrewCleanupList(page);
+        model.addAttribute("paging", paging);
+        return "brew_cleanup_list";
     }
 }

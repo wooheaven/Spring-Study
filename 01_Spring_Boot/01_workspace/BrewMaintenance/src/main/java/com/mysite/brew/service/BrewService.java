@@ -1,14 +1,8 @@
 package com.mysite.brew.service;
 
 import com.google.gson.*;
-import com.mysite.brew.entity.BrewDeps;
-import com.mysite.brew.entity.BrewOutdated;
-import com.mysite.brew.entity.BrewOutdatedPivot;
-import com.mysite.brew.entity.BrewUpdate;
-import com.mysite.brew.repository.BrewDepsRepository;
-import com.mysite.brew.repository.BrewOutdatedPivotRepository;
-import com.mysite.brew.repository.BrewOutdatedRepository;
-import com.mysite.brew.repository.BrewUpdateRepository;
+import com.mysite.brew.entity.*;
+import com.mysite.brew.repository.*;
 import com.mysite.common.service.CommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,22 +24,26 @@ public class BrewService {
     private static final String brewOutdated = brewInit + "brew outdated --json";
     private static final String brewDeps = brewInit + "brew deps --graph --dot ";
     private static final String brewUpgrade = brewInit + "brew upgrade ";
-    private static final String brewClean = brewInit + "brew cleanup";
+    private static final String brewClean = brewInit + "brew cleanup 2>&1 ";
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     private final BrewDepsRepository brewDepsRepository;
+    private final BrewCleanRepository brewCleanRepository;
     private final CommonService commonService;
 
     @Autowired
     public BrewService(BrewUpdateRepository brewUpdateRepository, BrewOutdatedRepository brewOutdatedRepository,
                        BrewOutdatedPivotRepository brewOutdatedPivotRepository,
-                       BrewDepsRepository brewDepsRepository, CommonService commonService) {
+                       BrewDepsRepository brewDepsRepository,
+                       BrewCleanRepository brewCleanRepository,
+                       CommonService commonService) {
         this.brewUpdateRepository = brewUpdateRepository;
         this.brewOutdatedRepository = brewOutdatedRepository;
         this.brewOutdatedPivotRepository = brewOutdatedPivotRepository;
         this.brewDepsRepository = brewDepsRepository;
+        this.brewCleanRepository = brewCleanRepository;
         this.commonService = commonService;
     }
 
@@ -273,6 +271,30 @@ public class BrewService {
     }
 
     public void cleanup() throws Exception {
-        this.commonService.getLineListByTerminalOut(brewClean);
+        // run brew clean
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewClean);
+
+        // read brew clean
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+
+        // write update to table
+        BrewClean brewClean = new BrewClean();
+        brewClean.setContent(content);
+        this.brewCleanRepository.save(brewClean);
+    }
+
+    public Page<BrewClean> getBrewCleanupList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Page<BrewClean> result = brewCleanRepository.findAll(pageable);
+        return result;
     }
 }
