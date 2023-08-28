@@ -19,8 +19,8 @@ import java.util.Map;
 
 @Service
 public class BrewService {
-    private static final String brewInit = "PATH=\"/home/linuxbrew/.linuxbrew/bin:${PATH}\" && ";
-    private static final String brewUpdate = brewInit + "brew update";
+    private static final String brewInit = "export PATH='/bin:/usr/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}' && ";
+    private static final String brewUpdate = brewInit + "brew update 2>&1 ";
     private static final String brewOutdated = brewInit + "brew outdated --json";
     private static final String brewDeps = brewInit + "brew deps --graph --dot ";
     private static final String brewUpgrade = brewInit + "brew upgrade ";
@@ -117,7 +117,7 @@ public class BrewService {
         JsonArray jsonArray = (JsonArray) commonService.readJSON(myContent);
         jsonArray.forEach(myJson -> {
             String myName = myJson.getAsJsonObject().get("name").getAsString();
-            String myInstalledVersion = myJson.getAsJsonObject().get("installed_versions").getAsString();
+            String myInstalledVersion = jsonArrayToString((JsonArray) myJson.getAsJsonObject().get("installed_versions"));
             String myCurrentVersion = myJson.getAsJsonObject().get("current_version").getAsString();
             Boolean myPinned = myJson.getAsJsonObject().get("pinned").getAsBoolean();
             BrewOutdatedPivot brewOutdatedPivot = new BrewOutdatedPivot();
@@ -127,6 +127,16 @@ public class BrewService {
             brewOutdatedPivot.setPinned(myPinned);
             this.brewOutdatedPivotRepository.save(brewOutdatedPivot);
         });
+    }
+
+    private String jsonArrayToString(JsonArray myJsonArray) {
+        final String[] result = {""};
+        myJsonArray.forEach(myVersionJson -> {
+            result[0] += myVersionJson.getAsString();
+            result[0] += ",";
+        });
+        result[0] = result[0].replaceAll(",$", "");
+        return result[0];
     }
 
     public Page<BrewOutdatedPivot> getBrewOutdatedPivotList(int page) {

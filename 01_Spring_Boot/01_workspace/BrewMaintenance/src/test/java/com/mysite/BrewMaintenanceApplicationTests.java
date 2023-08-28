@@ -29,6 +29,8 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StringUtils;
@@ -50,6 +52,7 @@ class BrewMaintenanceApplicationTests {
     @ExtendWith(MockitoExtension.class)
     @SpringBootTest
     class BrewTest {
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
         @Autowired
         private BrewUpdateRepository brewUpdateRepository;
         @Autowired
@@ -86,10 +89,11 @@ class BrewMaintenanceApplicationTests {
 
             // do
             this.brewService.update();
+            this.brewService.update();
 
             // after
             long after = this.brewUpdateRepository.count();
-            assert 1 == after;
+            assert 2 == after;
 
             // assert
             Optional<BrewUpdate> optional = brewUpdateRepository.findById(after);
@@ -97,7 +101,8 @@ class BrewMaintenanceApplicationTests {
             if (optional.isPresent()) {
                 content = optional.get().getContent();
             }
-            assert content.equals("Already up-to-date.");
+            logger.info("brew update content="+content);
+            assert content.contains("Already up-to-date.");
         }
 
         @Order(3)

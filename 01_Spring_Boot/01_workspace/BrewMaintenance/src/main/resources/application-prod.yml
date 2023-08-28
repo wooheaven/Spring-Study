@@ -31,3 +31,9 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+--- # log
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: info
