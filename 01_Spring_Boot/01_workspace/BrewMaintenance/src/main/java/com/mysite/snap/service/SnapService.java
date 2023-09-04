@@ -16,6 +16,7 @@ import java.util.List;
 @Service
 public class SnapService {
     private static final String snapRefreshList = "sudo -S <<< \"12qwas\" snap refresh --list 2>&1 | xargs -r";
+    private static final String snapRefresh = "sudo -S <<< \"12qwas\" snap refresh ";
     private final CommonService commonService;
     private final SnapRefreshListRepository snapRefreshListRepository;
 
@@ -43,7 +44,19 @@ public class SnapService {
 
         // save snap refresh list
         SnapRefreshList snapRefreshList = new SnapRefreshList();
-        snapRefreshList.setContent(content);
+        if (content.contains("All snaps up to date."))
+            snapRefreshList.setRefreshLog(content);
+        else if (content.contains("Name")) {
+            content = content.replace("Name Version Rev Size Publisher Notes ", "");
+            String[] fields = content.split(" ");
+            if (fields.length == 6)
+                snapRefreshList.setName(fields[0]);
+                snapRefreshList.setVersion(fields[1]);
+                snapRefreshList.setRev(fields[2]);
+                snapRefreshList.setSize(fields[3]);
+                snapRefreshList.setPublisher(fields[4]);
+                snapRefreshList.setNotes(fields[5]);
+        }
         this.snapRefreshListRepository.save(snapRefreshList);
     }
 
@@ -52,5 +65,28 @@ public class SnapService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.snapRefreshListRepository.findAll(pageable);
+    }
+
+    public void refresh(String name) throws Exception {
+        // find last snap refresh name from table
+        SnapRefreshList snapRefreshList = this.snapRefreshListRepository.findOneCustom(name);
+
+        // run snap refresh name
+        List<String> lineList = this.commonService.getLineListByTerminalOut(snapRefresh + name + " 2>&1");
+
+        // read snap refresh name
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replace("[sudo] password for woo: ", "");
+        content = content.replaceAll("\n$", "");
+
+        // write snap refresh name to table
+        snapRefreshList.setRefreshLog(content);
+        this.snapRefreshListRepository.save(snapRefreshList);
     }
 }

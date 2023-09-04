@@ -1,5 +1,7 @@
 # Created by manually
 **/.idea/**
+**/log/default/**
+**/log/prod/**
 
 # Created by https://www.toptal.com/developers/gitignore/api/git,java,maven,gradle,eclipse,intellij+all,linux,python,pydev
 # Edit at https://www.toptal.com/developers/gitignore?templates=git,java,maven,gradle,eclipse,intellij+all,linux,python,pydev

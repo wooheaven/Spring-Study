@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -31,5 +32,11 @@ public class SnapController {
         Page<SnapRefreshList> paging = this.snapService.getSnapRefreshList(page);
         model.addAttribute("paging", paging);
         return "/snap/snap_refresh_list";
+    }
+
+    @GetMapping("/refresh/{name}")
+    public String refreshName(@PathVariable("name") String name) throws Exception {
+        this.snapService.refresh(name);
+        return "redirect:/snap/refreshList";
     }
 }

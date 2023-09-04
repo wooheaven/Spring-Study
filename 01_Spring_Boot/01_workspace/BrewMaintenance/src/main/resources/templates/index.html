@@ -50,24 +50,17 @@
                 <tr>
                     <td>snap</td>
                     <td>00</td>
+                    <td><a href="/snap/list"> run</a></td>
+                    <td>sudo snap list --all</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>01</td>
                     <td>
                         <a href="/snap/refreshList"> run</a>,
                         <a href="/snap/refreshList/list"> log</a>
                     </td>
                     <td>sudo snap refresh --list</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>01</td>
-                    <td><a href="/snap/refresh/target"> run</a></td>
-                    <td>sudo snap refresh --list 2>&1 | awk 'BEGIN{FS=OFS=" "} {if (NF == 6 && $NF != "Notes") {print $1} }'
-                        | xargs -rn1 sudo snap refresh</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>02</td>
-                    <td><a href="/snap/list"> run</a></td>
-                    <td>sudo snap list --all</td>
                 </tr>
                 <tr>
                     <td></td>

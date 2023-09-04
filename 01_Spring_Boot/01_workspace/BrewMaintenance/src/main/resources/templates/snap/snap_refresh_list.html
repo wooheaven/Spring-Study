@@ -6,7 +6,13 @@
         <th style="text-align:left; width:4%">번호</th>
         <th style="text-align:left; width:13%">createdDate</th>
         <th style="text-align:left; width:13%">lastModifiedDate</th>
-        <th style="text-align:left; width:70%">content</th>
+        <th style="text-align:left; width:10%">Name</th>
+        <th style="text-align:left; width:10%">Version</th>
+        <th style="text-align:left; width:10%">Rev</th>
+        <th style="text-align:left; width:10%">Size</th>
+        <th style="text-align:left; width:10%">Publisher</th>
+        <th style="text-align:left; width:10%">Notes</th>
+        <th style="text-align:left; width:10%">RefreshLog</th>
       </tr>
     </thead>
     <tbody>
@@ -14,7 +20,13 @@
         <td style="text-align:left" th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
         <td style="text-align:left" th:text="${#temporals.format(snap_refresh_list.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
         <td style="text-align:left" th:text="${#temporals.format(snap_refresh_list.lastModifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.content}"></td>
+        <td style="text-align:left;white-space:pre;"><a th:href="@{/snap/refresh/{name}(name = ${snap_refresh_list.name})}" th:text="${snap_refresh_list.name}"/></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.version}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.rev}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.size}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.publisher}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.notes}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_refresh_list.refreshLog}"></td>
       </tr>
     </tbody>
   </table>

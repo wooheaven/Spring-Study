@@ -15,6 +15,24 @@ public class SnapRefreshList extends CommonLocalDateTime {
     @Column(name = "snap_refresh_list_id")
     private Long id;
 
+    @Column(length = 20)
+    private String name;
+
+    @Column(length = 20)
+    private String version;
+
+    @Column(length = 20)
+    private String rev;
+
+    @Column(length = 20)
+    private String size;
+
+    @Column(length = 20)
+    private String publisher;
+
     @Column(columnDefinition = "TEXT")
-    private String content;
+    private String notes;
+
+    @Column(columnDefinition = "TEXT")
+    private String refreshLog;
 }
