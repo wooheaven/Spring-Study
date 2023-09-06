@@ -1,5 +1,6 @@
 package com.mysite.snap.controller;
 
+import com.mysite.snap.entity.SnapList;
 import com.mysite.snap.entity.SnapRefreshList;
 import com.mysite.snap.service.SnapService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,17 @@ public class SnapController {
         this.snapService = snapService;
     }
 
+    @GetMapping("/list")
+    public String list() throws Exception {
+        this.snapService.list();
+        return "redirect:/snap/list/log";
+    }
+    @GetMapping("/list/log")
+    public String listLog(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+        Page<SnapList> paging = this.snapService.getSnapList(page);
+        model.addAttribute("paging", paging);
+        return "/snap/snap_list";
+    }
     @GetMapping("/refreshList")
     public String refreshList() throws Exception {
         this.snapService.refreshList();
