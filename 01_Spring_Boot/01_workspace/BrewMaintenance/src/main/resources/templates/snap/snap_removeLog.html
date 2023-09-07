@@ -7,24 +7,16 @@
         <th style="text-align:left; width:13%">createdDate</th>
         <th style="text-align:left; width:13%">lastModifiedDate</th>
         <th style="text-align:left; width:10%">Name</th>
-        <th style="text-align:left; width:10%">Version</th>
-        <th style="text-align:left; width:10%">Rev</th>
-        <th style="text-align:left; width:10%">Tracking</th>
-        <th style="text-align:left; width:10%">Publisher</th>
-        <th style="text-align:left; width:10%">Notes</th>
+        <th style="text-align:left; width:10%">removeLog</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="text-center" th:each="snap_list, loop : ${paging}">
+      <tr class="text-center" th:each="snap_removeLog, loop : ${paging}">
         <td style="text-align:left" th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
-        <td style="text-align:left" th:text="${#temporals.format(snap_list.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td style="text-align:left" th:text="${#temporals.format(snap_list.lastModifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td style="text-align:left;white-space:pre;"><a th:href="@{/snap/remove/name/{name}/rev/{rev}(name = ${snap_list.name}, rev = ${snap_list.rev})}" th:text="${snap_list.name}"/></td>
-        <td style="text-align:left;white-space:pre;" th:text="${snap_list.version}"></td>
-        <td style="text-align:left;white-space:pre;" th:text="${snap_list.rev}"></td>
-        <td style="text-align:left;white-space:pre;" th:text="${snap_list.tracking}"></td>
-        <td style="text-align:left;white-space:pre;" th:text="${snap_list.publisher}"></td>
-        <td style="text-align:left;white-space:pre;" th:text="${snap_list.notes}"></td>
+        <td style="text-align:left" th:text="${#temporals.format(snap_removeLog.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td style="text-align:left" th:text="${#temporals.format(snap_removeLog.lastModifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_removeLog.name}"></td>
+        <td style="text-align:left;white-space:pre;" th:text="${snap_removeLog.removeLog}"></td>
       </tr>
     </tbody>
   </table>

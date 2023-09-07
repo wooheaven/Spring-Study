@@ -2,6 +2,7 @@ package com.mysite.snap.controller;
 
 import com.mysite.snap.entity.SnapList;
 import com.mysite.snap.entity.SnapRefreshList;
+import com.mysite.snap.entity.SnapRemove;
 import com.mysite.snap.service.SnapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,5 +51,18 @@ public class SnapController {
     public String refreshName(@PathVariable("name") String name) throws Exception {
         this.snapService.refresh(name);
         return "redirect:/snap/refreshList";
+    }
+
+    @GetMapping("/remove/name/{name}/rev/{rev}")
+    public String remove(@PathVariable("name") String name, @PathVariable("rev") String rev) throws Exception {
+        this.snapService.remove(name, rev);
+        return "redirect:/snap/removeLog";
+    }
+
+    @GetMapping("/removeLog")
+    public String removeLog(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+        Page<SnapRemove> paging = this.snapService.getSnapRemoveLog(page);
+        model.addAttribute("paging", paging);
+        return "/snap/snap_removeLog";
     }
 }
