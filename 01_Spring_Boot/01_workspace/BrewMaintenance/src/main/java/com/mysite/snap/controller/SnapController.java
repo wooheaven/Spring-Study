@@ -1,5 +1,6 @@
 package com.mysite.snap.controller;
 
+import com.mysite.snap.entity.SnapChanges;
 import com.mysite.snap.entity.SnapList;
 import com.mysite.snap.entity.SnapRefreshList;
 import com.mysite.snap.entity.SnapRemove;
@@ -64,5 +65,18 @@ public class SnapController {
         Page<SnapRemove> paging = this.snapService.getSnapRemoveLog(page);
         model.addAttribute("paging", paging);
         return "/snap/snap_removeLog";
+    }
+
+    @GetMapping("/changes")
+    public String changes() throws Exception {
+        this.snapService.changes();
+        return "redirect:/snap/changesLog";
+    }
+
+    @GetMapping("/changesLog")
+    public String changes(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+        Page<SnapChanges> paging = this.snapService.getSnapChanges(page);
+        model.addAttribute("paging", paging);
+        return "/snap/snap_changes";
     }
 }

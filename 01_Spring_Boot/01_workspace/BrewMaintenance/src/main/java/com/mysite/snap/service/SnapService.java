@@ -1,9 +1,11 @@
 package com.mysite.snap.service;
 
 import com.mysite.common.service.CommonService;
+import com.mysite.snap.entity.SnapChanges;
 import com.mysite.snap.entity.SnapList;
 import com.mysite.snap.entity.SnapRefreshList;
 import com.mysite.snap.entity.SnapRemove;
+import com.mysite.snap.repository.SnapChangesRepository;
 import com.mysite.snap.repository.SnapListRepository;
 import com.mysite.snap.repository.SnapRefreshListRepository;
 import com.mysite.snap.repository.SnapRemoveRepository;
@@ -23,20 +25,24 @@ public class SnapService {
     private static final String snapRemove = "sudo -S <<< \"12qwas\" snap remove ";
     private static final String snapRefreshList = "sudo -S <<< \"12qwas\" snap refresh --list 2>&1 | xargs -r";
     private static final String snapRefresh = "sudo -S <<< \"12qwas\" snap refresh ";
+    private static final String snapChanges = "sudo -S <<< \"12qwas\" snap changes | sed -e 's/\s\\{3,\\}/  /g' ";
     private final CommonService commonService;
     private final SnapRefreshListRepository snapRefreshListRepository;
     private final SnapListRepository snapListRepository;
     private final SnapRemoveRepository snapRemoveRepository;
+    private final SnapChangesRepository snapChangesRepository;
 
     @Autowired
     public SnapService(CommonService commonService,
                        SnapRefreshListRepository snapRefreshListRepository,
                        SnapListRepository snaplistRepository,
-                       SnapRemoveRepository snapRemoveRepository) {
+                       SnapRemoveRepository snapRemoveRepository,
+                       SnapChangesRepository snapChangesRepository) {
         this.commonService = commonService;
         this.snapRefreshListRepository = snapRefreshListRepository;
         this.snapListRepository = snaplistRepository;
         this.snapRemoveRepository = snapRemoveRepository;
+        this.snapChangesRepository = snapChangesRepository;
     }
 
     public void refreshList() throws Exception {
@@ -172,5 +178,45 @@ public class SnapService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 100, Sort.by(sorts));
         return this.snapRemoveRepository.findAll(pageable);
+    }
+
+    public void changes() throws Exception {
+        // run snap changes
+        List<String> lineList = new ArrayList<>();
+        while (0 == lineList.size()) {
+            lineList = this.commonService.getLineListByTerminalOut(snapChanges);
+        }
+
+        // read snap changes
+        String content = "";
+        for (String myLine : lineList) {
+            content += myLine;
+            content += "\n";
+        }
+        content = content.replaceAll("\n$", "");
+
+        // save snap changes
+        SnapChanges snapChanges = new SnapChanges();
+        if (content.contains("ID  Status  Spawn  Ready  Summary")) {
+            content = content.replace("ID  Status  Spawn  Ready  Summary\n", "");
+            String[] fields = content.split("  ");
+            if (fields.length == 5) {
+                snapChanges.setId(Long.valueOf(fields[0]));
+                snapChanges.setStatus(fields[1]);
+                snapChanges.setSpawn(fields[2]);
+                snapChanges.setReady(fields[3]);
+                snapChanges.setSummary(fields[4]);
+            }
+        }
+        if (snapChanges.getId() != null) {
+            this.snapChangesRepository.save(snapChanges);
+        }
+    }
+
+    public Page<SnapChanges> getSnapChanges(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 100, Sort.by(sorts));
+        return this.snapChangesRepository.findAll(pageable);
     }
 }
