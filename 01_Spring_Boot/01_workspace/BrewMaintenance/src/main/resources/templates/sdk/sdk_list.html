@@ -8,11 +8,12 @@
         <th style="text-align:left; width:13%">createdDate</th>
         <th style="text-align:left; width:13%">lastModifiedDate</th>
         <th style="text-align:left; width:10%">Vendor</th>
-        <th style="text-align:left; width:10%">Use</th>
+        <th style="text-align:left; width:8%">Use</th>
         <th style="text-align:left; width:10%">Version</th>
         <th style="text-align:left; width:10%">Dist</th>
-        <th style="text-align:left; width:10%">Status</th>
-        <th style="text-align:left; width:10%">Identifier</th>
+        <th style="text-align:left; width:8%">Status</th>
+        <th style="text-align:left; width:15%">Identifier</th>
+        <th style="text-align:left; width:8%">Uninstall</th>
       </tr>
     </thead>
     <tbody>
@@ -29,6 +30,10 @@
         <td style="text-align:left">
           <a th:href="@{/sdk/install/{name}/{identifier}
             (name = ${sdk_list.lib}, identifier = ${sdk_list.getIdentifier()})}" th:text="${sdk_list.getIdentifier()}"/>
+        </td>
+        <td style="text-align:left">
+          <a th:href="@{/sdk/uninstall/{name}/{identifier}
+            (name = ${sdk_list.lib}, identifier = ${sdk_list.getIdentifier()})}" th:text="'Uninstall'"/>
         </td>
       </tr>
     </tbody>

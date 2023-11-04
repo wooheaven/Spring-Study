@@ -76,4 +76,18 @@ public class SdkController {
         model.addAttribute("paging", paging);
         return "sdk/sdk_install_list";
     }
+
+    @GetMapping("uninstall/{name}/{identifier}")
+    public String uninstall(@PathVariable("name") String name,
+                            @PathVariable("identifier") String identifier) throws Exception {
+        this.sdkService.uninstall(name, identifier);
+        return "redirect:/sdk/uninstall/list";
+    }
+
+    @GetMapping("uninstall/list")
+    public String uninstallList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<SdkUninstall> paging = this.sdkService.getSdkUninstallList(page);
+        model.addAttribute("paging", paging);
+        return "sdk/sdk_uninstall_list";
+    }
 }

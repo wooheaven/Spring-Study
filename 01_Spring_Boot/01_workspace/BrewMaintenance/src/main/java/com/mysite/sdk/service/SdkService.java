@@ -22,12 +22,14 @@ public class SdkService {
     private static final String sdkList = sdkInit + "PAGER=cat sdk list %s | grep '|' | sed 's/ //g' | sed 's/|/,/g'";
     private static final String sdkCandidates = "tree -J -d -L 2 ~/.sdkman/candidates/ | jq -M";
     private static final String sdkInstall = sdkInit + "sdk install %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
+    private static final String sdkUninstall = sdkInit + "sdk uninstall %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
     private final CommonService commonService;
     private final SdkUpdateRepository sdkUpdateRepository;
     private final SdkVersionRepository sdkVersionRepository;
     private final SdkListRepository sdkListRepository;
     private final SdkCandidatesRepository sdkCandidatesRepository;
     private final SdkInstallRepository sdkInstallRepository;
+    private final SdkUninstallRepository sdkUninstallRepository;
 
     @Autowired
     public SdkService(CommonService commonService,
@@ -35,13 +37,15 @@ public class SdkService {
                       SdkVersionRepository sdkVersionRepository,
                       SdkListRepository sdkListRepository,
                       SdkCandidatesRepository sdkCandidatesRepository,
-                      SdkInstallRepository sdkInstallRepository) {
+                      SdkInstallRepository sdkInstallRepository,
+                      SdkUninstallRepository sdkUninstallRepository) {
         this.commonService = commonService;
         this.sdkUpdateRepository = sdkUpdateRepository;
         this.sdkVersionRepository = sdkVersionRepository;
         this.sdkListRepository = sdkListRepository;
         this.sdkCandidatesRepository = sdkCandidatesRepository;
         this.sdkInstallRepository = sdkInstallRepository;
+        this.sdkUninstallRepository = sdkUninstallRepository;
     }
 
     public void update() throws Exception {
@@ -231,5 +235,36 @@ public class SdkService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
         return this.sdkInstallRepository.findAll(pageable);
+    }
+
+    public void uninstall(String name, String identifier) throws Exception {
+        // run sdk candidates
+        List<String> lineList = new ArrayList<>();
+        while (0 == lineList.size()) {
+            String cmd = String.format(sdkUninstall, name, identifier);
+            lineList = this.commonService.getLineListByTerminalOut(cmd);
+        }
+
+        // read sdk candidates
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+
+        // save sdk version from content
+        SdkUninstall sdkUninstall = new SdkUninstall();
+        sdkUninstall.setContent(content);
+        this.sdkUninstallRepository.save(sdkUninstall);
+    }
+
+    public Page<SdkUninstall> getSdkUninstallList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        return this.sdkUninstallRepository.findAll(pageable);
     }
 }

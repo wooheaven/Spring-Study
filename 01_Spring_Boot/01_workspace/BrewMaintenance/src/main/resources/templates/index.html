@@ -44,6 +44,12 @@
                 <tr>
                     <td></td>
                     <td>04</td>
+                    <td><a href="/sdk/uninstall/list"> run</a></td>
+                    <td>sdk uninstall list</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>05</td>
                     <td><a href="/sdk/candidates"> run</a></td>
                     <td>sdk candidates</td>
                 </tr>
@@ -60,18 +66,18 @@
                     <td></td>
                     <td>01</td>
                     <td>
-                        <a href="/snap/removeLog"> log</a>
+                        <a href="/snap/refreshList"> run</a>,
+                        <a href="/snap/refreshList/list"> log</a>
                     </td>
-                    <td>sudo snap remove --list</td>
+                    <td>sudo snap refresh --list</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>02</td>
                     <td>
-                        <a href="/snap/refreshList"> run</a>,
-                        <a href="/snap/refreshList/list"> log</a>
+                        <a href="/snap/removeLog"> log</a>
                     </td>
-                    <td>sudo snap refresh --list</td>
+                    <td>sudo snap remove --list</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -126,24 +132,6 @@
                         <a href="/brew/cleanup/list"> log</a>
                     </td>
                     <td>brew cleanup</td>
-                </tr>
-                <tr>
-                    <td>icloud</td>
-                    <td>00</td>
-                    <td><a href="/icloud/moveFile"> run</a></td>
-                    <td>icloud file to folder</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>01</td>
-                    <td><a href="/icloud/trash"> run</a></td>
-                    <td>icloud file to trash</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>02 00 01</td>
-                    <td><a href="/icloud/etc"> run</a></td>
-                    <td>icloud file to folder and trash</td>
                 </tr>
             </tbody>
         </table>
