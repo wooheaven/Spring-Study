@@ -39,7 +39,7 @@ public class MyRobot {
         this.robot.mouseMove(x, y);
     }
 
-    private void mouseRightClick(int delay) {
+    public void mouseRightClick(int delay) {
         delay(delay);
         this.robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
         this.robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);

@@ -21,16 +21,28 @@ public class IcloudController {
     }
 
     private void moveFile(MyRobot myRobot) throws AWTException {
-        myRobot.mouseMove(500, 1350, 400);
-        myRobot.mouseLeftClick(100);
-        myRobot.mouseMove(500, 1790, 185);
-        myRobot.mouseLeftClick(2500);
-        myRobot.altS(1100);
+        int delay = 850;
+        myRobot.mouseMove(delay, 420, 350);
+        myRobot.mouseLeftClick(delay);
+        myRobot.mouseRightClick(delay);
+        myRobot.mouseMove(delay, 450, 410);
+        myRobot.mouseLeftClick(delay * 4);
+        myRobot.altS(delay * 4);
+
+        myRobot.mouseMove(delay, 420, 350);
+        myRobot.mouseLeftClick(delay);
+        myRobot.mouseRightClick(delay);
+        myRobot.mouseMove(delay, 450, 440);
+        myRobot.mouseLeftClick(delay);
+        myRobot.mouseMove(delay, 1160, 650);
+        myRobot.mouseLeftClick(delay * 5);
+        myRobot.altS(delay * 6);
     }
 
-    private void goToBase(MyRobot myRobot) throws AWTException {
-        myRobot.mouseMove(500, 790, 185);
-        myRobot.mouseLeftClick(100);
+    private void goToBase(MyRobot myRobot) {
+        int delay = 600;
+        myRobot.mouseMove(delay, 500, 1450);
+        myRobot.mouseLeftClick(delay);
     }
 
     @GetMapping("/trash")
@@ -42,11 +54,15 @@ public class IcloudController {
     }
 
     private void trash(MyRobot myRobot) throws AWTException {
-        myRobot.mouseMove(500, 1350, 400);
-        myRobot.mouseLeftClick(100);
-        myRobot.mouseMove(500, 1835, 185);
-        myRobot.mouseLeftClick(100);
-        myRobot.keyboardPressRelease(100, "");
+        int delay = 700;
+        myRobot.mouseMove(delay, 420, 350);
+        myRobot.mouseLeftClick(delay);
+        myRobot.mouseRightClick(delay);
+        myRobot.mouseMove(delay, 450, 610);
+        myRobot.mouseLeftClick(delay);
+        myRobot.mouseMove(delay, 1090, 740);
+        myRobot.mouseLeftClick(delay);
+        myRobot.delay(delay * 3);
     }
 
     @GetMapping("/etc")
@@ -54,7 +70,6 @@ public class IcloudController {
         MyRobot myRobot = new MyRobot();
         moveFile(myRobot);
         trash(myRobot);
-        goToBase(myRobot);
         return "redirect:/";
     }
 }
