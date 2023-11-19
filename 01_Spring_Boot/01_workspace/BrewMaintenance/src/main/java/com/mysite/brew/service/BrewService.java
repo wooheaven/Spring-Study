@@ -19,18 +19,20 @@ import java.util.Map;
 
 @Service
 public class BrewService {
-    private static final String brewInit = "export PATH='/bin:/usr/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}' && ";
+    private static final String brewInit = "export PATH='/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/bin:/usr/bin:${PATH}' && ";
     private static final String brewUpdate = brewInit + "brew update 2>&1 ";
     private static final String brewOutdated = brewInit + "brew outdated --json";
     private static final String brewDeps = brewInit + "brew deps --graph --dot ";
     private static final String brewUpgrade = brewInit + "brew upgrade ";
     private static final String brewClean = brewInit + "brew cleanup 2>&1 ";
+    private static final String brewDoctor = brewInit + "brew doctor 2>&1 ";
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
     private final BrewOutdatedPivotRepository brewOutdatedPivotRepository;
     private final BrewDepsRepository brewDepsRepository;
     private final BrewCleanRepository brewCleanRepository;
+    private final BrewDoctorRepository brewDoctorRepository;
     private final CommonService commonService;
 
     @Autowired
@@ -38,12 +40,14 @@ public class BrewService {
                        BrewOutdatedPivotRepository brewOutdatedPivotRepository,
                        BrewDepsRepository brewDepsRepository,
                        BrewCleanRepository brewCleanRepository,
+                       BrewDoctorRepository brewDoctorRepository,
                        CommonService commonService) {
         this.brewUpdateRepository = brewUpdateRepository;
         this.brewOutdatedRepository = brewOutdatedRepository;
         this.brewOutdatedPivotRepository = brewOutdatedPivotRepository;
         this.brewDepsRepository = brewDepsRepository;
         this.brewCleanRepository = brewCleanRepository;
+        this.brewDoctorRepository = brewDoctorRepository;
         this.commonService = commonService;
     }
 
@@ -160,8 +164,8 @@ public class BrewService {
             if (resultList.get(0).equals("digraph {")) {
                 resultList.remove(0);
             }
-            if (resultList.get(resultList.size()-1).equals("}")) {
-                resultList.remove(resultList.size()-1);
+            if (resultList.get(resultList.size() - 1).equals("}")) {
+                resultList.remove(resultList.size() - 1);
             }
             String content = "";
             for (String myLine : resultList) {
@@ -305,6 +309,32 @@ public class BrewService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         Page<BrewClean> result = brewCleanRepository.findAll(pageable);
+        return result;
+    }
+
+    public void doctor() throws Exception {
+        // run brew doctor
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewDoctor);
+
+        // read brew doctor
+        String content = "";
+        for (String myLine : lineList) {
+            content += myLine;
+            content += "\n";
+        }
+        content = content.replaceAll("\n$", "");
+
+        // write update to table
+        BrewDoctor brewDoctor = new BrewDoctor();
+        brewDoctor.setContent(content);
+        this.brewDoctorRepository.save(brewDoctor);
+    }
+
+    public Page<BrewDoctor> getBrewDoctorList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Page<BrewDoctor> result = brewDoctorRepository.findAll(pageable);
         return result;
     }
 }

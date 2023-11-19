@@ -97,4 +97,17 @@ public class BrewController {
         model.addAttribute("paging", paging);
         return "brew_cleanup_list";
     }
+
+    @GetMapping("doctor")
+    public String doctor() throws Exception {
+        brewService.doctor();
+        return "redirect:/brew/doctor/list";
+    }
+
+    @GetMapping("doctor/list")
+    public String doctorList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewDoctor> paging = this.brewService.getBrewDoctorList(page);
+        model.addAttribute("paging", paging);
+        return "/brew/brew_doctor_list";
+    }
 }
