@@ -95,7 +95,7 @@ public class BrewController {
     public String cleanupList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<BrewClean> paging = this.brewService.getBrewCleanupList(page);
         model.addAttribute("paging", paging);
-        return "brew_cleanup_list";
+        return "/brew/brew_cleanup_list";
     }
 
     @GetMapping("doctor")
