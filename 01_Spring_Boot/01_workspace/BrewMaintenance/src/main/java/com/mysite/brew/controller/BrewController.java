@@ -31,7 +31,7 @@ public class BrewController {
     public String updateList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<BrewUpdate> paging = this.brewService.getBrewUpdateList(page);
         model.addAttribute("paging", paging);
-        return "brew_update_list";
+        return "/brew/brew_update_list";
     }
 
     @GetMapping("outdated")
@@ -44,7 +44,7 @@ public class BrewController {
     public String outdatedList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<BrewOutdated> paging = this.brewService.getBrewOutdatedList(page);
         model.addAttribute("paging", paging);
-        return "brew_outdated_list";
+        return "redirect:/brew/brew_outdated_list";
     }
 
     @GetMapping("outdatedPivot")
@@ -57,7 +57,7 @@ public class BrewController {
     public String outdatedPivotList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<BrewOutdatedPivot> paging = this.brewService.getBrewOutdatedPivotList(page);
         model.addAttribute("paging", paging);
-        return "brew_outdated_pivot_list";
+        return "redirect:/brew/brew_outdated_pivot_list";
     }
 
     @GetMapping("deps")
@@ -70,7 +70,7 @@ public class BrewController {
     public String depsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<BrewDeps> paging = this.brewService.getBrewDepsList(page);
         model.addAttribute("paging", paging);
-        return "brew_deps_list";
+        return "/brew/brew_deps_list";
     }
 
     @GetMapping("/upgrade/{name}")
