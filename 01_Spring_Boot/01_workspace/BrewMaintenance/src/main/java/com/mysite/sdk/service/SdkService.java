@@ -23,6 +23,7 @@ public class SdkService {
     private static final String sdkCandidates = "tree -J -d -L 2 ~/.sdkman/candidates/ | jq -M";
     private static final String sdkInstall = sdkInit + "sdk install %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
     private static final String sdkUninstall = sdkInit + "sdk uninstall %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
+    private static final String sdkUse = sdkInit + "sdk default %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
     private final CommonService commonService;
     private final SdkUpdateRepository sdkUpdateRepository;
     private final SdkVersionRepository sdkVersionRepository;
@@ -30,6 +31,7 @@ public class SdkService {
     private final SdkCandidatesRepository sdkCandidatesRepository;
     private final SdkInstallRepository sdkInstallRepository;
     private final SdkUninstallRepository sdkUninstallRepository;
+    private final SdkUseRepository sdkUseRepository;
 
     @Autowired
     public SdkService(CommonService commonService,
@@ -38,7 +40,8 @@ public class SdkService {
                       SdkListRepository sdkListRepository,
                       SdkCandidatesRepository sdkCandidatesRepository,
                       SdkInstallRepository sdkInstallRepository,
-                      SdkUninstallRepository sdkUninstallRepository) {
+                      SdkUninstallRepository sdkUninstallRepository,
+                      SdkUseRepository sdkUseRepository) {
         this.commonService = commonService;
         this.sdkUpdateRepository = sdkUpdateRepository;
         this.sdkVersionRepository = sdkVersionRepository;
@@ -46,6 +49,7 @@ public class SdkService {
         this.sdkCandidatesRepository = sdkCandidatesRepository;
         this.sdkInstallRepository = sdkInstallRepository;
         this.sdkUninstallRepository = sdkUninstallRepository;
+        this.sdkUseRepository = sdkUseRepository;
     }
 
     public void update() throws Exception {
@@ -266,5 +270,36 @@ public class SdkService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
         return this.sdkUninstallRepository.findAll(pageable);
+    }
+
+    public void use(String name, String identifier) throws Exception {
+        // run sdk use <candidate> <version>
+        List<String> lineList = new ArrayList<>();
+        while (0 == lineList.size()) {
+            String cmd = String.format(sdkUse, name, identifier);
+            lineList = this.commonService.getLineListByTerminalOut(cmd);
+        }
+
+        // read sdk use <candidate> <version>
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+
+        // save sdk use <candidate> <version>
+        SdkUse sdkUse = new SdkUse();
+        sdkUse.setContent(content);
+        this.sdkUseRepository.save(sdkUse);
+    }
+
+    public Page<SdkUse> getSdkUseList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        return this.sdkUseRepository.findAll(pageable);
     }
 }

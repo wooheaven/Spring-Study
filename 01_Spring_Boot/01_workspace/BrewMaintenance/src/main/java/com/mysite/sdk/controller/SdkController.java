@@ -77,6 +77,20 @@ public class SdkController {
         return "sdk/sdk_install_list";
     }
 
+    @GetMapping("use/{name}/{identifier}")
+    public String use(@PathVariable("name") String name,
+                      @PathVariable("identifier") String identifier) throws Exception {
+        this.sdkService.use(name, identifier);
+        return "redirect:/sdk/use/list";
+    }
+
+    @GetMapping("use/list")
+    public String useList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<SdkUse> paging = this.sdkService.getSdkUseList(page);
+        model.addAttribute("paging", paging);
+        return "sdk/sdk_use_list";
+    }
+
     @GetMapping("uninstall/{name}/{identifier}")
     public String uninstall(@PathVariable("name") String name,
                             @PathVariable("identifier") String identifier) throws Exception {
