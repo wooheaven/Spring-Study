@@ -28,9 +28,9 @@ public class BrewController {
     }
 
     @GetMapping("updateList")
-    public String updateList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String updateList(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
         Page<BrewUpdate> paging = this.brewService.getBrewUpdateList(page);
-        model.addAttribute("paging", paging);
+        model.addAttribute("paging" , paging);
         return "/brew/brew_update_list";
     }
 
@@ -41,10 +41,10 @@ public class BrewController {
     }
 
     @GetMapping("outdatedList")
-    public String outdatedList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String outdatedList(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
         Page<BrewOutdated> paging = this.brewService.getBrewOutdatedList(page);
-        model.addAttribute("paging", paging);
-        return "redirect:/brew/brew_outdated_list";
+        model.addAttribute("paging" , paging);
+        return "/brew/brew_outdated_list";
     }
 
     @GetMapping("outdatedPivot")
@@ -54,10 +54,10 @@ public class BrewController {
     }
 
     @GetMapping("outdatedPivotList")
-    public String outdatedPivotList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String outdatedPivotList(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
         Page<BrewOutdatedPivot> paging = this.brewService.getBrewOutdatedPivotList(page);
-        model.addAttribute("paging", paging);
-        return "redirect:/brew/brew_outdated_pivot_list";
+        model.addAttribute("paging" , paging);
+        return "/brew/brew_outdated_pivot_list";
     }
 
     @GetMapping("deps")
@@ -67,9 +67,9 @@ public class BrewController {
     }
 
     @GetMapping("depsList")
-    public String depsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String depsList(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
         Page<BrewDeps> paging = this.brewService.getBrewDepsList(page);
-        model.addAttribute("paging", paging);
+        model.addAttribute("paging" , paging);
         return "/brew/brew_deps_list";
     }
 
@@ -92,9 +92,9 @@ public class BrewController {
     }
 
     @GetMapping("cleanup/list")
-    public String cleanupList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String cleanupList(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
         Page<BrewClean> paging = this.brewService.getBrewCleanupList(page);
-        model.addAttribute("paging", paging);
+        model.addAttribute("paging" , paging);
         return "/brew/brew_cleanup_list";
     }
 
@@ -105,9 +105,68 @@ public class BrewController {
     }
 
     @GetMapping("doctor/list")
-    public String doctorList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String doctorList(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
         Page<BrewDoctor> paging = this.brewService.getBrewDoctorList(page);
-        model.addAttribute("paging", paging);
+        model.addAttribute("paging" , paging);
         return "/brew/brew_doctor_list";
+    }
+
+    @GetMapping("list")
+    public String list() throws Exception {
+        brewService.list();
+        return "redirect:/brew/list/last";
+    }
+
+    @GetMapping("list/last")
+    public String listLast(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
+        Page<BrewList> paging = this.brewService.getBrewListLast(page);
+        model.addAttribute("paging" , paging);
+        return "/brew/brew_list_last";
+    }
+
+    @GetMapping("list/all")
+    public String listAll(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
+        Page<BrewList> paging = this.brewService.getBrewListAll(page);
+        model.addAttribute("paging" , paging);
+        return "/brew/brew_list_all";
+    }
+
+    @GetMapping("/deps/{name}")
+    public String depsInstalled(@PathVariable("name") String name) throws Exception {
+        brewService.depsInstalled(name);
+        return "redirect:/brew/deps/installed/all";
+    }
+
+    @GetMapping("/deps/installed/all")
+    public String depsInstalledAll(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewDepsInstalled> paging = this.brewService.getBrewDepsInstalled(page);
+        model.addAttribute("paging", paging);
+        return "/brew/brew_deps_installed";
+    }
+
+    @GetMapping("/uses/{name}")
+    public String usesInstalled(@PathVariable("name") String name) throws Exception {
+        brewService.usesInstalled(name);
+        return "redirect:/brew/uses/installed/all";
+    }
+
+    @GetMapping("/uses/installed/all")
+    public String usesInstalledAll(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewUsesInstalled> paging = this.brewService.getBrewUsesInstalled(page);
+        model.addAttribute("paging", paging);
+        return "/brew/brew_uses_installed";
+    }
+
+    @GetMapping("/info/{name}")
+    public String info(@PathVariable("name") String name) throws Exception {
+        brewService.info(name);
+        return "redirect:/brew/info/installed/all";
+    }
+
+    @GetMapping("/info/installed/all")
+    public String infoInstalledAll(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<BrewInfo> paging = this.brewService.getBrewInfo(page);
+        model.addAttribute("paging", paging);
+        return "/brew/brew_info_installed";
     }
 }

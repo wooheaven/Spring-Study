@@ -1,6 +1,9 @@
 package com.mysite.brew.service;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mysite.brew.entity.*;
 import com.mysite.brew.repository.*;
 import com.mysite.common.service.CommonService;
@@ -21,11 +24,15 @@ import java.util.Map;
 public class BrewService {
     private static final String brewInit = "export PATH='/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/bin:/usr/bin:${PATH}' && ";
     private static final String brewUpdate = brewInit + "brew update 2>&1 ";
-    private static final String brewOutdated = brewInit + "brew outdated --json";
+    private static final String brewOutdated = brewInit + "brew outdated --json | jq -M ";
     private static final String brewDeps = brewInit + "brew deps --graph --dot ";
+    private static final String brewDepsInstalled = brewInit + "brew deps --tree --installed ";
     private static final String brewUpgrade = brewInit + "brew upgrade ";
     private static final String brewClean = brewInit + "brew cleanup 2>&1 ";
     private static final String brewDoctor = brewInit + "brew doctor 2>&1 ";
+    private static final String brewList = brewInit + "brew list --version 2>&1 ";
+    private static final String brewUsesInstalled = brewInit + "brew uses --installed ";
+    private static final String brewInfoJson = brewInit + "brew info --json ";
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
@@ -33,6 +40,10 @@ public class BrewService {
     private final BrewDepsRepository brewDepsRepository;
     private final BrewCleanRepository brewCleanRepository;
     private final BrewDoctorRepository brewDoctorRepository;
+    private final BrewListRepository brewListRepository;
+    private final BrewDepsInstalledRepository brewDepsInstalledRepository;
+    private final BrewUsesRepository brewUsesRepository;
+    private final BrewInfoRepository brewInfoRepository;
     private final CommonService commonService;
 
     @Autowired
@@ -41,6 +52,10 @@ public class BrewService {
                        BrewDepsRepository brewDepsRepository,
                        BrewCleanRepository brewCleanRepository,
                        BrewDoctorRepository brewDoctorRepository,
+                       BrewListRepository brewListRepository,
+                       BrewDepsInstalledRepository brewDepsInstalledRepository,
+                       BrewUsesRepository brewUsesRepository,
+                       BrewInfoRepository brewInfoRepository,
                        CommonService commonService) {
         this.brewUpdateRepository = brewUpdateRepository;
         this.brewOutdatedRepository = brewOutdatedRepository;
@@ -48,6 +63,10 @@ public class BrewService {
         this.brewDepsRepository = brewDepsRepository;
         this.brewCleanRepository = brewCleanRepository;
         this.brewDoctorRepository = brewDoctorRepository;
+        this.brewListRepository = brewListRepository;
+        this.brewDepsInstalledRepository = brewDepsInstalledRepository;
+        this.brewUsesRepository = brewUsesRepository;
+        this.brewInfoRepository = brewInfoRepository;
         this.commonService = commonService;
     }
 
@@ -335,6 +354,126 @@ public class BrewService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         Page<BrewDoctor> result = brewDoctorRepository.findAll(pageable);
+        return result;
+    }
+
+    public void list() throws Exception {
+        // run brew list
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewList);
+
+        // read brew list
+        List<BrewList> brewLists = new ArrayList<>();
+        for (String myLine : lineList) {
+            String[] myData = myLine.split(" ");
+            String myName = myData[0];
+            String myVersion = myData[1];
+            BrewList brewList = new BrewList();
+            brewList.setName(myName);
+            brewList.setVersion(myVersion);
+            brewLists.add(brewList);
+        }
+
+        // write brew list
+        this.brewListRepository.saveAll(brewLists);
+    }
+
+    public Page<BrewList> getBrewListLast(int page) {
+        String lastName = brewListRepository.findLastName();
+        Long secondID = brewListRepository.findSecondIDByLastName(lastName);
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("brew_list_id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        Page<BrewList> result = brewListRepository.findAllByLast(secondID, pageable);
+        return result;
+    }
+
+    public Page<BrewList> getBrewListAll(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("brew_list_id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        Page<BrewList> result = brewListRepository.findAllByLast(0L, pageable);
+        return result;
+    }
+
+    public void depsInstalled(String name) throws Exception {
+        // run brew deps --tree --installed
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewDepsInstalled + name);
+
+        // read brew deps --tree --installed
+        String content = "";
+        for (String myLine : lineList) {
+            content += myLine;
+            content += "\n";
+        }
+        content = content.replaceAll("\n$", "");
+
+        // write brew deps --tree --installed
+        BrewDepsInstalled brewDepsInstalled = new BrewDepsInstalled();
+        brewDepsInstalled.setContent(content);
+        this.brewDepsInstalledRepository.save(brewDepsInstalled);
+    }
+
+    public Page<BrewDepsInstalled> getBrewDepsInstalled(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        Page<BrewDepsInstalled> result = brewDepsInstalledRepository.findAll(pageable);
+        return result;
+    }
+
+    public void usesInstalled(String name) throws Exception {
+        // run brew uses --installed
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewUsesInstalled + name);
+
+        // read brew uses --installed
+        String content = "";
+        for (String myLine : lineList) {
+            content += myLine;
+            content += "\n";
+        }
+        content = content.replaceAll("\n$", "");
+
+        // write brew uses --installed
+        BrewUsesInstalled brewUsesInstalled = new BrewUsesInstalled();
+        brewUsesInstalled.setName(name);
+        brewUsesInstalled.setDeps(content);
+        this.brewUsesRepository.save(brewUsesInstalled);
+    }
+
+    public Page<BrewUsesInstalled> getBrewUsesInstalled(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        Page<BrewUsesInstalled> result = brewUsesRepository.findAll(pageable);
+        return result;
+    }
+
+    public void info(String name) throws Exception {
+        // run brew info --json
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewInfoJson + name);
+
+        // read brew info --json
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+
+        // save brew info --json
+        BrewInfo brewInfo = new BrewInfo();
+        brewInfo.setContent(content);
+        this.brewInfoRepository.save(brewInfo);
+    }
+
+    public Page<BrewInfo> getBrewInfo(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        Page<BrewInfo> result = brewInfoRepository.findAll(pageable);
         return result;
     }
 }

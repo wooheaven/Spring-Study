@@ -6,8 +6,8 @@
                 <tr>
                     <th style="text-align:left; width:3%;">Software</th>
                     <th style="text-align:left; width:4%;">번호</th>
-                    <th style="text-align:left; width:7%;">Link</th>
-                    <th style="text-align:left; width:86%;">내용</th>
+                    <th style="text-align:left; width:20%;">Action to Link</th>
+                    <th style="text-align:left; width:70%;">내용</th>
                 </tr>
             </thead>
             <tbody>
@@ -147,6 +147,40 @@
                         <a href="/brew/doctor/list"> log</a>
                     </td>
                     <td>brew doctor</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>07</td>
+                    <td>
+                        <a href="/brew/list"> run</a>,
+                        <a href="/brew/list/last"> last</a>,
+                        <a href="/brew/list/all"> all</a>
+                    </td>
+                    <td>brew list --version</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>08</td>
+                    <td>
+                        <a href="/brew/uses/installed/all"> log</a>
+                    </td>
+                    <td>brew uses --installed PACKAGE</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>09</td>
+                    <td>
+                        <a href="/brew/deps/installed/all"> log</a>
+                    </td>
+                    <td>brew deps --tree --installed PACKAGE</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>10</td>
+                    <td>
+                        <a href="/brew/info/installed/all"> log</a>
+                    </td>
+                    <td>brew info --json PACKAGE</td>
                 </tr>
             </tbody>
         </table>
