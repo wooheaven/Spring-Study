@@ -28,6 +28,7 @@ public class BrewService {
     private static final String brewDeps = brewInit + "brew deps --graph --dot ";
     private static final String brewDepsInstalled = brewInit + "brew deps --tree --installed ";
     private static final String brewUpgrade = brewInit + "brew upgrade ";
+    private static final String brewAutoremove = brewInit + "brew autoremove 2>&1 ";
     private static final String brewClean = brewInit + "brew cleanup 2>&1 ";
     private static final String brewDoctor = brewInit + "brew doctor 2>&1 ";
     private static final String brewList = brewInit + "brew list --version 2>&1 ";
@@ -44,6 +45,7 @@ public class BrewService {
     private final BrewDepsInstalledRepository brewDepsInstalledRepository;
     private final BrewUsesRepository brewUsesRepository;
     private final BrewInfoRepository brewInfoRepository;
+    private final BrewAutoremoveRepository brewAutoremoveRepository;
     private final CommonService commonService;
 
     @Autowired
@@ -56,6 +58,7 @@ public class BrewService {
                        BrewDepsInstalledRepository brewDepsInstalledRepository,
                        BrewUsesRepository brewUsesRepository,
                        BrewInfoRepository brewInfoRepository,
+                       BrewAutoremoveRepository brewAutoremoveRepository,
                        CommonService commonService) {
         this.brewUpdateRepository = brewUpdateRepository;
         this.brewOutdatedRepository = brewOutdatedRepository;
@@ -67,6 +70,7 @@ public class BrewService {
         this.brewDepsInstalledRepository = brewDepsInstalledRepository;
         this.brewUsesRepository = brewUsesRepository;
         this.brewInfoRepository = brewInfoRepository;
+        this.brewAutoremoveRepository = brewAutoremoveRepository;
         this.commonService = commonService;
     }
 
@@ -303,6 +307,34 @@ public class BrewService {
         }
     }
 
+    public void autoremove() throws Exception {
+        // run brew autoremove
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewAutoremove);
+
+        // read brew autoremove
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+
+        // write update to table
+        BrewAutoremove brewAutoremove = new BrewAutoremove();
+        brewAutoremove.setContent(content);
+        this.brewAutoremoveRepository.save(brewAutoremove);
+    }
+
+    public Page<BrewAutoremove> getBrewAutoremoveList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 1000, Sort.by(sorts));
+        Page<BrewAutoremove> result = brewAutoremoveRepository.findAll(pageable);
+        return result;
+    }
+
     public void cleanup() throws Exception {
         // run brew clean
         List<String> lineList = this.commonService.getLineListByTerminalOut(brewClean);
@@ -476,4 +508,5 @@ public class BrewService {
         Page<BrewInfo> result = brewInfoRepository.findAll(pageable);
         return result;
     }
+
 }

@@ -85,6 +85,18 @@ public class BrewController {
         return "redirect:/brew/depsList";
     }
 
+    @GetMapping("autoremove")
+    public String autoremove() throws Exception {
+        brewService.autoremove();
+        return "redirect:/brew/autoremove/list";
+    }
+
+    @GetMapping("autoremove/list")
+    public String autoremoveList(Model model, @RequestParam(value = "page" , defaultValue = "0") int page) {
+        Page<BrewAutoremove> paging = this.brewService.getBrewAutoremoveList(page);
+        model.addAttribute("paging" , paging);
+        return "/brew/brew_autoremove_list";
+    }
     @GetMapping("cleanup")
     public String cleanup() throws Exception {
         brewService.cleanup();
