@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CustomBrewDepsRepository {
 
-    List<BrewDeps> updateSortNumberByCustom(List<String> rootNodeList);
+    List<BrewDeps> customUpdateSortNumber(List<String> rootNodeList);
 }

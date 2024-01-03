@@ -14,7 +14,7 @@ public class CustomBrewDepsRepositoryImpl implements CustomBrewDepsRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<BrewDeps> updateSortNumberByCustom(List<String> rootNodeList) {
+    public List<BrewDeps> customUpdateSortNumber(List<String> rootNodeList) {
         QBrewDeps qBrewDeps = new QBrewDeps("brew_deps");
         List<BrewDeps> brewDepsList = new ArrayList<>();
         for (String myRootNode : rootNodeList) {

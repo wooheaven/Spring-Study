@@ -259,7 +259,7 @@ public class BrewService {
         // update sortNumber
         List<String> rootNodeList = brewDepsRepository.findGroupByRootNodeWithCustom();
         rootNodeList = sortByDependency(rootNodeList);
-        List<BrewDeps> brewDepsList = brewDepsRepository.updateSortNumberByCustom(rootNodeList);
+        List<BrewDeps> brewDepsList = brewDepsRepository.customUpdateSortNumber(rootNodeList);
         for (BrewDeps myBrewDeps : brewDepsList) {
             this.brewDepsRepository.save(myBrewDeps);
         }
@@ -411,7 +411,7 @@ public class BrewService {
 
     public Page<BrewList> getBrewListLast(int page) {
         String lastName = brewListRepository.findLastName();
-        Long secondID = brewListRepository.findSecondIDByLastName(lastName);
+        Long secondID = brewListRepository.customFindSecondIDByLastName(lastName);
 
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("brew_list_id"));
