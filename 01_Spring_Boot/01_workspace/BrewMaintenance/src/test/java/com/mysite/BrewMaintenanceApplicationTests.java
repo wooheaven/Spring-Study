@@ -234,7 +234,7 @@ class BrewMaintenanceApplicationTests {
             if (optional.isPresent()) {
                 content = optional.get().getContent();
             }
-            assert content.contains("candidates");
+            assert content.contains("update");
         }
 
         @Order(3)

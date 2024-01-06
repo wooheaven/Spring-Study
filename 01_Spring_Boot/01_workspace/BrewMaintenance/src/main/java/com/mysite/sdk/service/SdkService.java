@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class SdkService {
     private static final String sdkInit = "source $HOME/.sdkman/bin/sdkman-init.sh && ";
-    private static final String sdkUpdate = sdkInit + "sdk update";
+    private static final String sdkUpdate = sdkInit + "sdk selfupdate";
     private static final String sdkVersion = sdkInit + "sdk version";
     private static final String sdkList = sdkInit + "PAGER=cat sdk list %s | grep '|' | sed 's/ //g' | sed 's/|/,/g'";
     private static final String sdkCandidates = "tree -J -d -L 2 ~/.sdkman/candidates/ | jq -M";
