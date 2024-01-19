@@ -34,6 +34,7 @@ public class BrewService {
     private static final String brewList = brewInit + "brew list --version 2>&1 ";
     private static final String brewUsesInstalled = brewInit + "brew uses --installed ";
     private static final String brewInfoJson = brewInit + "brew info --json ";
+    private static final String brewUninstall = brewInit + "brew uninstall ";
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final BrewUpdateRepository brewUpdateRepository;
     private final BrewOutdatedRepository brewOutdatedRepository;
@@ -46,6 +47,7 @@ public class BrewService {
     private final BrewUsesRepository brewUsesRepository;
     private final BrewInfoRepository brewInfoRepository;
     private final BrewAutoremoveRepository brewAutoremoveRepository;
+    private final BrewUninstallRepository brewUninstallRepository;
     private final CommonService commonService;
 
     @Autowired
@@ -59,6 +61,7 @@ public class BrewService {
                        BrewUsesRepository brewUsesRepository,
                        BrewInfoRepository brewInfoRepository,
                        BrewAutoremoveRepository brewAutoremoveRepository,
+                       BrewUninstallRepository brewUninstallRepository,
                        CommonService commonService) {
         this.brewUpdateRepository = brewUpdateRepository;
         this.brewOutdatedRepository = brewOutdatedRepository;
@@ -71,6 +74,7 @@ public class BrewService {
         this.brewUsesRepository = brewUsesRepository;
         this.brewInfoRepository = brewInfoRepository;
         this.brewAutoremoveRepository = brewAutoremoveRepository;
+        this.brewUninstallRepository = brewUninstallRepository;
         this.commonService = commonService;
     }
 
@@ -509,4 +513,31 @@ public class BrewService {
         return result;
     }
 
+    public Page<BrewUninstall> getBrewUninstallLog(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 100, Sort.by(sorts));
+        return this.brewUninstallRepository.findAll(pageable);
+    }
+
+    public void uninstall(String name) throws Exception {
+        // run brew uninstall
+        List<String> lineList = this.commonService.getLineListByTerminalOut(brewUninstall + name);
+
+        // read brew uninstall
+        String content = "";
+        for (String myLine : lineList) {
+            if (myLine.length() > 0) {
+                content += myLine;
+                content += "\n";
+            }
+        }
+        content = content.replaceAll("\n$", "");
+
+        // save brew uninstall
+        BrewUninstall brewUninstall = new BrewUninstall();
+        brewUninstall.setName(name);
+        brewUninstall.setRemoveLog(content);
+        this.brewUninstallRepository.save(brewUninstall);
+    }
 }

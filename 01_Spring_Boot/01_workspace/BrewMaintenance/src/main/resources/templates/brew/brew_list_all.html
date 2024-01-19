@@ -21,9 +21,10 @@
         <td style="text-align:left;white-space: pre-line" th:text="${brew_list_all.name}"></td>
         <td style="text-align:left;white-space: pre-line" th:text="${brew_list_all.version}"></td>
         <td style="text-align:left;">
-          brew uses --installed <a th:href="@{/brew/uses/{name}(name = ${brew_list_all.name})}" th:text="${brew_list_all.name}"/> <br />
-          brew deps --tree --installed <a th:href="@{/brew/deps/{name}(name = ${brew_list_all.name})}" th:text="${brew_list_all.name}"/> <br />
-          brew info --json <a th:href="@{/brew/info/{name}(name = ${brew_list_all.name})}" th:text="${brew_list_all.name}"/>
+          brew uses --installed <a th:href="@{/brew/uses/{name}(name = ${brew_list_all.name})}" th:text="${brew_list_all.name}"/> <br>
+          brew deps --tree --installed <a th:href="@{/brew/deps/{name}(name = ${brew_list_all.name})}" th:text="${brew_list_all.name}"/> <br>
+          brew info --json <a th:href="@{/brew/info/{name}(name = ${brew_list_all.name})}" th:text="${brew_list_all.name}"/> <br>
+          brew uninstall <a th:href="@{/brew/uninstall/name/{name}(name = ${brew_list_all.name})}" th:text="${brew_list_all.name}"/>
         </td>
       </tr>
     </tbody>

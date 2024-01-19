@@ -143,6 +143,19 @@ public class BrewController {
         return "/brew/brew_list_all";
     }
 
+    @GetMapping("/uninstall/name/{name}")
+    public String uninstall(@PathVariable("name") String name) throws Exception {
+        this.brewService.uninstall(name);
+        return "redirect:/brew/uninstallLog";
+    }
+
+    @GetMapping("/uninstallLog")
+    public String uninstallLog(Model model, @RequestParam(value = "page", defaultValue = "0") int page) throws Exception {
+        Page<BrewUninstall> paging = this.brewService.getBrewUninstallLog(page);
+        model.addAttribute("paging", paging);
+        return "/brew/brew_uninstallLog";
+    }
+
     @GetMapping("/deps/{name}")
     public String depsInstalled(@PathVariable("name") String name) throws Exception {
         brewService.depsInstalled(name);
