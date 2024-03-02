@@ -1,0 +1,4 @@
+mvn clean package -DskipTests=True
+
+mvn spring-boot:run -Dspring-boot.run.profiles=default
+mvn spring-boot:run -Dspring-boot.run.profiles=prod
