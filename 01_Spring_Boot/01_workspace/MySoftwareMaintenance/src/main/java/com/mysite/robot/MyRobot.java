@@ -45,4 +45,16 @@ public class MyRobot {
         this.robot.keyRelease(KeyEvent.VK_ALT);
         delay(ms);
     }
+
+    public void mouseWheel(int delay) {
+        delay(delay);
+        for(int i = 0; i<20; i++) {
+            this.robot.mouseWheel(1);
+            delay(100);
+        }
+        for(int i = 0; i<21; i++) {
+            this.robot.mouseWheel(-1);
+            delay(100);
+        }
+    }
 }

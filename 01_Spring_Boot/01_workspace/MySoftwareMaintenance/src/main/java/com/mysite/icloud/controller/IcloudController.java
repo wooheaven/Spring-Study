@@ -45,7 +45,7 @@ public class IcloudController {
         myRobot.mouseRightClick(delay);
         myRobot.mouseMove(delay, secondDownloadX, thirdDownloadY);
         myRobot.mouseLeftClick(delay);
-        myRobot.mouseMove(delay, 1160, 670);
+        myRobot.mouseMove(delay, 1145, 660);
         myRobot.mouseLeftClick(delay * 5);
         myRobot.altS(delay * 6);
     }
@@ -54,6 +54,11 @@ public class IcloudController {
         int delay = 600;
         myRobot.mouseMove(delay, 500, 1450);
         myRobot.mouseLeftClick(delay);
+    }
+
+    private void scrollUpAndDown(MyRobot myRobot) {
+        int delay = 600;
+        myRobot.mouseWheel(delay);
     }
 
     @GetMapping("/trash")
@@ -88,6 +93,7 @@ public class IcloudController {
             MyRobot myRobot = new MyRobot();
             moveFile(myRobot);
             trash(myRobot);
+            scrollUpAndDown(myRobot);
             goToBase(myRobot);
         }
         return "redirect:/";
