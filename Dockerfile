@@ -1,4 +1,4 @@
-FROM maven:3.9.6-eclipse-temurin-21
+FROM maven:3.9.9-eclipse-temurin-22
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -11,8 +11,9 @@ RUN useradd -m -s /bin/bash linuxbrew \
  && echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
  && su - linuxbrew -c 'mkdir ~/.linuxbrew'
 
-USER linuxbrew
-RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+USER root
+RUN su - 'linuxbrew' \
+ && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 USER root
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
