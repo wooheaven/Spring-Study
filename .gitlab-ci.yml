@@ -20,6 +20,9 @@ test:
     - pwd
     - java -version
     - mvn -version
+    - chown -R $(whoami) $(brew --prefix)/*
+    - brew doctor
+    - brew update
     - brew list
     - source /root/.profile && sdk version
     - cd /builds/wooheaven/Spring-Study/01_Spring_Boot/01_workspace/BrewMaintenance/ && mvn clean compile --quiet
