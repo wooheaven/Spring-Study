@@ -67,6 +67,7 @@ public class SnapService {
         if (content.contains("All snaps up to date.")) {
             snapRefreshList = new SnapRefreshList();
             snapRefreshList.setRefreshLog(content);
+            this.snapRefreshListRepository.save(snapRefreshList);
         } else {
             String[] fields = content.split(" ");
             int snapRefreshLineCount = fields.length / 6;
