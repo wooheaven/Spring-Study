@@ -17,6 +17,7 @@ test:
   image: $CI_REGISTRY_IMAGE # maven:3.9.3-eclipse-temurin-17 # based on ubuntu 22.04
   stage: test
   before_script:
+    - whoami
     - pwd
     - java -version
     - mvn -version
