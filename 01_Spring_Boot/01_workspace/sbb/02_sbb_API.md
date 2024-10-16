@@ -1,4 +1,3 @@
-```md
 | HTTP(method)      |
 | :---------------- |
 | GET(read)         |
@@ -14,6 +13,5 @@
 
 | URL(resource) | GET(read)                                         | POST(create) | PUT/PATCH(update)          | DELETE(delete)  |
 | :------------ | :------------------------------------------------ | :----------- | :------------------------- | :-------------- |
-| sbb           | return "안녕하세요. sbb에 오신 것을 환영합니다. " | -            | -                          | -               |
+| sbb           | return "안녕하세요. sbb에 오신 것을 환영합니다."  | -            | -                          | -               |
 | sbb/hello     | return "hello world"                              | -            | -                          | -               |
-```
