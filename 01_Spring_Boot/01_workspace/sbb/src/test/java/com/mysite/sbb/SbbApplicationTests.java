@@ -49,4 +49,10 @@ class SbbApplicationTests {
         }
     }
 
+    @Test
+    void testJpaFindBySubject() {
+        Question q = this.questionRepository.findBySubject("what is sbb?");
+        assertEquals("I want to know sbb.", q.getContent());
+    }
+
 }

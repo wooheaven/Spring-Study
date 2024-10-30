@@ -6,4 +6,6 @@ import com.mysite.sbb.entity.Question;
 
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
+    Question findBySubject(String string);
+
 }
