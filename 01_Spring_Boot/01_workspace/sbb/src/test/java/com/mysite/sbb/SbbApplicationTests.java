@@ -41,7 +41,12 @@ class SbbApplicationTests {
 
     @Test
     void testJpaFindById() {
-        Integer lastId = (int) this.questionRepository.count();
+        Integer lastId = null;
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        if (oq1.isPresent()) {
+            Question q1 = oq1.get();
+            lastId = q1.getId();
+        }
         Optional<Question> oq = this.questionRepository.findById(lastId);
         if (oq.isPresent()) {
             Question q = oq.get();
@@ -53,6 +58,21 @@ class SbbApplicationTests {
     void testJpaFindBySubject() {
         Question q = this.questionRepository.findBySubject("what is sbb?");
         assertEquals("I want to know sbb.", q.getContent());
+    }
+    
+    @Test
+    void testJpaFindBySubjectAndContent() {
+        Integer lastId = null;
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        if (oq1.isPresent()) {
+            Question q1 = oq1.get();
+            lastId = q1.getId();
+        }
+        Optional<Question> oq2 = this.questionRepository.findBySubjectAndContent("스프링부트 모델 질문입니다.", "id는 자동으로 생성되나요?");
+        if (oq2.isPresent()) {
+            Question q2 = oq2.get();
+            assertEquals(lastId, q2.getId());
+        }
     }
 
 }
