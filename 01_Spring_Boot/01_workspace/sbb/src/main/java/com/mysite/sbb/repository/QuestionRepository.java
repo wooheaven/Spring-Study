@@ -1,5 +1,6 @@
 package com.mysite.sbb.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     Optional<Question> findBySubjectAndContent(String subject, String content);
 
     Optional<Question> findFirstByOrderByIdDesc();
+
+    List<Question> findBySubjectLike(String subject);
 
 }
