@@ -82,4 +82,45 @@ class SbbApplicationTests {
         assertEquals("what is sbb?", q.getSubject());
     }
 
+    @Test
+    void testJpaSave() {
+        Integer lastId = null;
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        String newSubject = "Spring Boot Model 질문입니다.";
+        if (oq1.isPresent()) {
+            Question q1 = oq1.get();
+            q1.setSubject(newSubject);
+            this.questionRepository.save(q1);
+            lastId = q1.getId();
+        }
+        Optional<Question> oq = this.questionRepository.findById(lastId);
+        if (oq.isPresent()) {
+            Question q = oq.get();
+            assertEquals(newSubject, q.getSubject());
+        }
+    }
+    
+    @Test
+    void testJpaDelete() {
+        Question q1 = new Question();
+        q1.setSubject("sbb는 무엇인가요?");
+        q1.setContent("sbb를 알고 싶습니다.");
+        q1.setCreateDate(LocalDateTime.now());
+        this.questionRepository.save(q1);
+        
+        long count = this.questionRepository.count();
+        System.out.println(count);
+        Integer lastId = null;
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        if (oq1.isPresent()) {
+            Question q2 = oq1.get();
+            lastId = q2.getId();
+        }
+        Optional<Question> oq = this.questionRepository.findById(lastId);
+        if (oq.isPresent()) {
+            Question q = oq.get();
+            this.questionRepository.delete(q);
+            assertEquals(count - 1, this.questionRepository.count());
+        }
+    }
 }
