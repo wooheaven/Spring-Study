@@ -1,0 +1,19 @@
+<table>
+    <thead>
+        <tr>
+            <th>USER_ID</th>
+            <th>GAME_ID<th>
+            <th>USER_NM<th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="user : ${users}">
+            <td>
+                <a th:href="@{|/user/detail/${user.userId}|}" th:text="${user.userId}"></a>
+                
+            </td> 
+            <td th:text="${user.gameId}"></td>
+            <td th:text="${user.userNm}"></td>
+        </tr>
+    </tbody>
+</table>
