@@ -3,6 +3,10 @@ plugins {
     id 'org.springframework.boot' version '3.2.10'
     id 'io.spring.dependency-management' version '1.1.6'
 }
+springBoot {
+    //mainClass = 'com.mysite.sbb.SbbApplication'
+    mainClass = 'com.mysite.dho.DhoApplication'
+}
 
 group = 'com.mysite'
 version = '0.0.1-SNAPSHOT'
