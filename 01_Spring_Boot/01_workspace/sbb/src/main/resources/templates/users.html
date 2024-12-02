@@ -1,21 +1,34 @@
-<table>
-    <thead>
-        <tr>
-            <th>USER_ID</th>
-            <th>GAME_ID<th>
-            <th>USER_NM<th>
-            <th>CREATE_DATE<th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="user : ${users}">
-            <td>
-                <a th:href="@{|/user/detail/${user.userId}|}" th:text="${user.userId}"></a>
-                
-            </td> 
-            <td th:text="${user.gameId}"></td>
-            <td th:text="${user.userNm}"></td>
-            <td th:text="${user.createDate}"></td>
-        </tr>
-    </tbody>
-</table>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <table border="1">
+        <thead classs="thead-dark">
+            <tr>
+                <th width="120">USER_ID</th>
+                <th width="130">GAME_ID</th>
+                <th width="120">USER_NAME</th>
+                <th width="240">CREATE_DATE</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td>
+                    <a th:href="@{|/user/detail/${user.userId}|}" th:text="${user.userId}">USER_ID</a>
+                </td>
+                <td th:text="${user.gameId}">GAME_ID</td>
+                <td th:text="${user.userNm}">USER_NM</td>
+                <td th:text="${user.createDate}">CREATE_DATE</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
