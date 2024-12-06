@@ -33,5 +33,5 @@ public class Question {
     private LocalDateTime createDate;
     
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
-    private List<Answer> answers;
+    private List<Answer> answerList;
 }
