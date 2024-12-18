@@ -7,7 +7,7 @@ INSERT INTO question (subject, content, create_date) VALUES
 INSERT INTO answer (question_q_id, content, create_date) VALUES 
 (1, 'sbb is a simple basic board', '2024-11-14 22:06:01')  ;
 
--- USER
+-- DHO_USER
 INSERT INTO dho_user (user_id, game_id, user_nm, create_date) VALUES 
 ('U11', 'wooskyheaven', '문익점', CURRENT_TIMESTAMP()),
 ('U12', 'wooskyheaven', '멜서스', CURRENT_TIMESTAMP()),
@@ -15,6 +15,15 @@ INSERT INTO dho_user (user_id, game_id, user_nm, create_date) VALUES
 ('U24', 'woogreate',    '선인'  , CURRENT_TIMESTAMP()),
 ('U35', 'woogood',      '무위'  , CURRENT_TIMESTAMP()),
 ('U36', 'woogood',      '누구'  , CURRENT_TIMESTAMP())  ;
+
+-- DHO_LOGIN
+INSERT INTO dho_login (num, left_user, right_user) VALUES
+(1, 'U11', 'U24'),
+(2, 'U11', 'U23'),
+(3, 'U12', 'U23'),
+(4, 'U35', 'U23'),
+(5, 'U36', 'U23'),
+(6, 'U11', 'U23') ;
 
 -- TO_DO
 INSERT INTO to_do (todo_id,user_user_id,content,create_date) VALUES 
