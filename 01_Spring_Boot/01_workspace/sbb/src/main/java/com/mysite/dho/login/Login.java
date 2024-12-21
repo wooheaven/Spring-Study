@@ -18,8 +18,20 @@ public class Login {
     private int num;
 
     @Column(length = 3)
-    private String leftUser;
+    private String leftUserId;
+    
+    @Column(length = 12)
+    private String leftGameId;
+    
+    @Column(length = 3)
+    private String leftUserNm;
 
     @Column(length = 3)
-    private String rightUser;
+    private String rightUserId;
+
+    @Column(length = 12)
+    private String rightGameId;
+    
+    @Column(length = 3)
+    private String rightUserNm;
 }
