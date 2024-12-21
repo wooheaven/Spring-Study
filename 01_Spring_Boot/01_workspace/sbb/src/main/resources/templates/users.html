@@ -7,6 +7,9 @@
 </head>
 
 <body>
+    <div>
+        <a th:href="@{|/login/list|}">Link to LoginList</a>
+    </div>
     <table border="1">
         <thead classs="thead-dark">
             <tr>
@@ -14,7 +17,6 @@
                 <th width="130">GAME_ID</th>
                 <th width="120">USER_NAME</th>
                 <th width="240">CREATE_DATE</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -25,7 +27,6 @@
                 <td th:text="${user.gameId}">GAME_ID</td>
                 <td th:text="${user.userNm}">USER_NM</td>
                 <td th:text="${user.createDate}">CREATE_DATE</td>
-                <td></td>
             </tr>
         </tbody>
     </table>

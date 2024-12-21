@@ -19,19 +19,19 @@ public class Login {
 
     @Column(length = 3)
     private String leftUserId;
-    
-    @Column(length = 12)
-    private String leftGameId;
-    
+
     @Column(length = 3)
     private String leftUserNm;
+
+    @Column(length = 12)
+    private String leftGameId;
 
     @Column(length = 3)
     private String rightUserId;
 
-    @Column(length = 12)
-    private String rightGameId;
-    
     @Column(length = 3)
     private String rightUserNm;
+
+    @Column(length = 12)
+    private String rightGameId;
 }
