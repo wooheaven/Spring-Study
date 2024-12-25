@@ -47,7 +47,7 @@ INSERT INTO to_do (todo_id,user_user_id,content,create_date) VALUES
 (DEFAULT,'U23','바질 83 을 버질리코 스파게티로 만들기',                 CURRENT_TIMESTAMP()),
 (DEFAULT,'U23','소금구이 모두 6,200원에 팔기',                          CURRENT_TIMESTAMP()),
 (DEFAULT,'U23','다랑어 올리브 스테이크 모두 27,000원에 팔기',           CURRENT_TIMESTAMP()),
-(DEFAULT,'U23','프프란 트리 모두 220,000원에 팔기',                     CURRENT_TIMESTAMP()),
+(DEFAULT,'U23','프프란 트리 모두 225,000원에 팔기',                     CURRENT_TIMESTAMP()),
 (DEFAULT,'U23','합계 Lv116 | 파티쉐로 전직하기',                        CURRENT_TIMESTAMP()),
 (DEFAULT,'U23','합계 Lv106 | 모험34 상인63 군인9',                      CURRENT_TIMESTAMP()),
 (DEFAULT,'U24','Sai_Fi_Wh3 개발 중',                                    CURRENT_TIMESTAMP()),
@@ -58,4 +58,5 @@ INSERT INTO to_do (todo_id,user_user_id,content,create_date) VALUES
 (DEFAULT,'U24','타임 수량만큼 로즈마리를 U11 에게 전달하기',            CURRENT_TIMESTAMP()), 
 (DEFAULT,'U24','바질 83 을 U11에게 전달하기',                           CURRENT_TIMESTAMP()), 
 (DEFAULT,'U24','정어리 80 을 U11에게 전달하기',                         CURRENT_TIMESTAMP()), 
+(DEFAULT,'U24','다랑어 50 단위로 U11 에게 전달하기',                    CURRENT_TIMESTAMP()), 
 (DEFAULT,'U24','소금 50, 오레가노 50, 로즈마리 50 런던에서 판매하기',   CURRENT_TIMESTAMP()) ;
