@@ -17,5 +17,3 @@
 | sbb/hello                | return "hello world sbb"                         | -            | -                          | -               |
 | question/list            | list up of questions                             | -            | -                          | -               |
 | question/detail/{id}     | details of the question                          | -            | -                          | -               |
-| user/list                | list up of users                                 | -            | -                          | -               |
-| user/detail/{id}         | details of the user                              | -            | -                          | -               |
