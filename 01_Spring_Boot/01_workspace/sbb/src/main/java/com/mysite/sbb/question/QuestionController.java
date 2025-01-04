@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,4 +29,14 @@ public class QuestionController {
         return "question_detail";
     }
 
+    @GetMapping(value = "/create")
+    public String create() {
+        return "question_form";
+    }
+
+    @PostMapping("/create")
+    public String create(@RequestParam(value = "subject") String subject, @RequestParam(value = "content") String content) {
+        this.questionService.create(subject, content);
+        return "redirect:/question/list";
+    }
 }
