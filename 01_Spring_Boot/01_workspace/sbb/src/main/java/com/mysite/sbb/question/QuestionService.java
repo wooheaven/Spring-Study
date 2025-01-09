@@ -19,14 +19,6 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
-    public Page<Question> getQuestions() {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createTime"));
-        sorts.add(Sort.Order.desc("id"));
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(sorts));
-        return this.questionRepository.findAll(pageable);
-    }
-
     public Question getQuestion(Integer id) {
         Optional<Question> question = this.questionRepository.findById(id);
         if (question.isPresent()) {
@@ -45,7 +37,10 @@ public class QuestionService {
     }
 
     public Page<Question> getList(int page) {
-        Pageable pageable = PageRequest.of(page, 10);
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.questionRepository.findAll(pageable);
     }
 }
