@@ -98,10 +98,10 @@ public class SdkService {
         Long upperRowNum = lowerRowNum + 10L;
         List<Long> firstTopTenIdList = this.sdkUpdateRepository.findTopTenByIdOrderByIdDesc(lowerRowNum, upperRowNum);
         List<Long> targetIdList = new ArrayList<>();
-        for (int i = 0; i < sdkUpdatePageSize; i++) {
+        for (int i = 0; i < firstTopTenIdList.size(); i++) {
             Long idI = firstTopTenIdList.get(i);
             String contentI = this.sdkUpdateRepository.findContentById(idI);
-            for (int j = i+1; j < sdkUpdatePageSize; j++) {
+            for (int j = i+1; j < firstTopTenIdList.size(); j++) {
                 Long idJ = firstTopTenIdList.get(j);
                 String contentJ = this.sdkUpdateRepository.findContentById(idJ);
                 if (contentI.equals(contentJ)) {
