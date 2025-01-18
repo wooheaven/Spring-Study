@@ -29,6 +29,7 @@ public class SdkController {
 
     @GetMapping("updateList")
     public String updateList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        this.sdkService.removeDuplicatedContent(page);
         Page<SdkUpdate> paging = this.sdkService.getSdkUpdateList(page);
         model.addAttribute("paging", paging);
         return "sdk/sdk_update_list";

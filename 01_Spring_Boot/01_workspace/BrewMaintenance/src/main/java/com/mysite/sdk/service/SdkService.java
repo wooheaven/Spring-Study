@@ -12,7 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SdkService {
@@ -24,6 +26,7 @@ public class SdkService {
     private static final String sdkInstall = sdkInit + "sdk install %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
     private static final String sdkUninstall = sdkInit + "sdk uninstall %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
     private static final String sdkUse = sdkInit + "sdk default %s %s | sed -e 's/[\\x1B|\\[]//g;s/^1;32m//;s/0m$//;s/^1;33m//' ";
+    private static final Integer sdkUpdatePageSize = 10;
     private final CommonService commonService;
     private final SdkUpdateRepository sdkUpdateRepository;
     private final SdkVersionRepository sdkVersionRepository;
@@ -86,8 +89,32 @@ public class SdkService {
     public Page<SdkUpdate> getSdkUpdateList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, sdkUpdatePageSize, Sort.by(sorts));
         return this.sdkUpdateRepository.findAll(pageable);
+    }
+
+    public void removeDuplicatedContent(int page) {
+        Long lowerRowNum = page * Integer.toUnsignedLong(sdkUpdatePageSize);
+        Long upperRowNum = lowerRowNum + 10L;
+        List<Long> firstTopTenIdList = this.sdkUpdateRepository.findTopTenByIdOrderByIdDesc(lowerRowNum, upperRowNum);
+        List<Long> targetIdList = new ArrayList<>();
+        for (int i = 0; i < sdkUpdatePageSize; i++) {
+            Long idI = firstTopTenIdList.get(i);
+            String contentI = this.sdkUpdateRepository.findContentById(idI);
+            for (int j = i+1; j < sdkUpdatePageSize; j++) {
+                Long idJ = firstTopTenIdList.get(j);
+                String contentJ = this.sdkUpdateRepository.findContentById(idJ);
+                if (contentI.equals(contentJ)) {
+                    targetIdList.add(idJ);
+                }
+            }
+        }
+        targetIdList = targetIdList.stream().sorted(Comparator.reverseOrder()).distinct().collect(Collectors.toList());
+        if (!targetIdList.isEmpty()) {
+            for (Long targetId : targetIdList) {
+                this.sdkUpdateRepository.deleteById(targetId);
+            }
+        }
     }
 
     public void version() throws Exception {
