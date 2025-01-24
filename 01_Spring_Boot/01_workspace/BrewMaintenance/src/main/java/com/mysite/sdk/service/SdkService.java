@@ -93,26 +93,50 @@ public class SdkService {
         return this.sdkUpdateRepository.findAll(pageable);
     }
 
-    public void removeDuplicatedContent(int page) {
+    public void removeDuplicatedContent(int page, String tableName) {
         Long lowerRowNum = page * Integer.toUnsignedLong(sdkUpdatePageSize);
         Long upperRowNum = lowerRowNum + 10L;
-        List<Long> firstTopTenIdList = this.sdkUpdateRepository.findTopTenByIdOrderByIdDesc(lowerRowNum, upperRowNum);
-        List<Long> targetIdList = new ArrayList<>();
-        for (int i = 0; i < firstTopTenIdList.size(); i++) {
-            Long idI = firstTopTenIdList.get(i);
-            String contentI = this.sdkUpdateRepository.findContentById(idI);
-            for (int j = i+1; j < firstTopTenIdList.size(); j++) {
-                Long idJ = firstTopTenIdList.get(j);
-                String contentJ = this.sdkUpdateRepository.findContentById(idJ);
-                if (contentI.equals(contentJ)) {
-                    targetIdList.add(idJ);
+        if (tableName.equals("sdk_update")) {
+            List<Long> firstTopTenIdList = this.sdkUpdateRepository.findTopTenByIdOrderByIdDesc(lowerRowNum, upperRowNum);
+            List<Long> targetIdList = new ArrayList<>();
+            for (int i = 0; i < firstTopTenIdList.size(); i++) {
+                Long idI = firstTopTenIdList.get(i);
+                String contentI = this.sdkUpdateRepository.findContentById(idI);
+                for (int j = i+1; j < firstTopTenIdList.size(); j++) {
+                    Long idJ = firstTopTenIdList.get(j);
+                    String contentJ = this.sdkUpdateRepository.findContentById(idJ);
+                    if (contentI.equals(contentJ)) {
+                        targetIdList.add(idJ);
+                    }
                 }
             }
-        }
-        targetIdList = targetIdList.stream().sorted(Comparator.reverseOrder()).distinct().collect(Collectors.toList());
-        if (!targetIdList.isEmpty()) {
-            for (Long targetId : targetIdList) {
-                this.sdkUpdateRepository.deleteById(targetId);
+            targetIdList = targetIdList.stream().sorted(Comparator.reverseOrder()).distinct().collect(Collectors.toList());
+            System.out.println("SdkUpdate's item will be deleted " + String.format("%02d", targetIdList.size()));
+            if (!targetIdList.isEmpty()) {
+                for (Long targetId : targetIdList) {
+                    this.sdkUpdateRepository.deleteById(targetId);
+                }
+            }
+        } else if (tableName.equals("sdk_version")) {
+            List<Long> firstTopTenIdList = this.sdkVersionRepository.findTopTenByIdOrderByIdDesc(lowerRowNum, upperRowNum);
+            List<Long> targetIdList = new ArrayList<>();
+            for (int i = 0; i < firstTopTenIdList.size(); i++) {
+                Long idI = firstTopTenIdList.get(i);
+                String contentI = this.sdkVersionRepository.findContentById(idI);
+                for (int j = i+1; j < firstTopTenIdList.size(); j++) {
+                    Long idJ = firstTopTenIdList.get(j);
+                    String contentJ = this.sdkVersionRepository.findContentById(idJ);
+                    if (contentI.equals(contentJ)) {
+                        targetIdList.add(idJ);
+                    }
+                }
+            }
+            targetIdList = targetIdList.stream().sorted(Comparator.reverseOrder()).distinct().collect(Collectors.toList());
+            System.out.println("SdkVersion's item will be deleted " + String.format("%02d", targetIdList.size()));
+            if (!targetIdList.isEmpty()) {
+                for (Long targetId : targetIdList) {
+                    this.sdkVersionRepository.deleteById(targetId);
+                }
             }
         }
     }

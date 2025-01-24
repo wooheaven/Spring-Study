@@ -29,7 +29,7 @@ public class SdkController {
 
     @GetMapping("updateList")
     public String updateList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-        this.sdkService.removeDuplicatedContent(page);
+        this.sdkService.removeDuplicatedContent(page, "sdk_update");
         Page<SdkUpdate> paging = this.sdkService.getSdkUpdateList(page);
         model.addAttribute("paging", paging);
         return "sdk/sdk_update_list";
@@ -43,6 +43,7 @@ public class SdkController {
 
     @GetMapping("versionList")
     public String versionList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        this.sdkService.removeDuplicatedContent(page, "sdk_version");
         Page<SdkVersion> paging = this.sdkService.getSdkVersionList(page);
         model.addAttribute("paging", paging);
         return "sdk/sdk_version_list";
