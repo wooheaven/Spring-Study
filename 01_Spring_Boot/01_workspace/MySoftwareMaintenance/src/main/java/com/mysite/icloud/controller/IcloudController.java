@@ -25,8 +25,8 @@ public class IcloudController {
     }
 
     private void moveFile(MyRobot myRobot) throws AWTException {
-        int delay = 850;
-        int firstPictureX = 430;
+        int delay = 900; // 850
+        int firstPictureX = 400; // 430
         int firstPictureY = 380;
         int secondDownloadX = firstPictureX + 30;
         int secondDownloadY = firstPictureY + 65;
@@ -37,7 +37,8 @@ public class IcloudController {
         myRobot.mouseRightClick(delay);
         myRobot.mouseMove(delay, secondDownloadX, secondDownloadY);
         myRobot.mouseLeftClick(delay * 4);
-        myRobot.altS(delay * 4);
+        myRobot.mouseMove(delay * 4, secondDownloadX + 210, secondDownloadY);
+        myRobot.altS(delay * 6);
 
         // More Download Options
         myRobot.mouseMove(delay, firstPictureX, firstPictureY);
@@ -45,9 +46,9 @@ public class IcloudController {
         myRobot.mouseRightClick(delay);
         myRobot.mouseMove(delay, secondDownloadX, thirdDownloadY);
         myRobot.mouseLeftClick(delay);
-        myRobot.mouseMove(delay, 1145, 660);
+        myRobot.mouseMove(delay, 1110, 655); // 1145 660
         myRobot.mouseLeftClick(delay * 5);
-        myRobot.altS(delay * 6);
+        myRobot.altS(delay * 5);
     }
 
     private void goToBase(MyRobot myRobot) {
@@ -80,7 +81,7 @@ public class IcloudController {
         myRobot.mouseRightClick(delay);
         myRobot.mouseMove(delay, secondPictureX, secondPictureY);
         myRobot.mouseLeftClick(delay);
-        myRobot.mouseMove(delay, 1090, 740);
+        myRobot.mouseMove(delay, 1085, 735); // 1090 740
         myRobot.mouseLeftClick(delay);
         myRobot.delay(delay * 3);
     }
