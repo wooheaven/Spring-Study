@@ -1,5 +1,8 @@
 package com.mysite.sbb.answer;
 
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +15,8 @@ import com.mysite.sbb.question.QuestionService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.security.Principal;
+
 @RequestMapping(value = "/answer")
 @RequiredArgsConstructor
 @Controller
@@ -19,11 +24,15 @@ public class AnswerController {
 
     private final QuestionService questionService;
     private final AnswerService answerService;
-    
+    private final UserService userService;
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/create/{id}")
-    public String createAnswer(Model model, @PathVariable("id") Integer id, @RequestParam(value = "content") String content) {
+    public String createAnswer(Model model, @PathVariable("id") Integer id,
+                               @RequestParam(value = "content") String content, Principal principal) {
         Question question = this.questionService.getQuestion(id);
-        this.answerService.create(question, content);
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        this.answerService.create(question, content, siteUser);
         return String.format("redirect:/question/detail/%s", id);
     }
 }
