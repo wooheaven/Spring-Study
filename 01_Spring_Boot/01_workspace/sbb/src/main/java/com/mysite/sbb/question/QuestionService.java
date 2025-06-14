@@ -52,4 +52,8 @@ public class QuestionService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.questionRepository.findAll(pageable);
     }
+
+    public void delete(Question question) {
+        this.questionRepository.delete(question);
+    }
 }
