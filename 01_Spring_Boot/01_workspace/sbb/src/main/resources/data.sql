@@ -1,3 +1,9 @@
+-- site_user
+INSERT INTO site_user (id, email, password, username) VALUES
+(1, 'wooheaven79@gmail.com', '$2a$10$fxFuRMuVNvSWiehZd1IW9.zXHdSi3riSIyHBsO0SXa.pmU1WfzsrK', 'myuser'),
+(2, 'wooheaven85@gmail.com', '$2a$10$fxFuRMuVNvSWiehZd1IW9.zXHdSi3riSIyHBsO0SXa.pmU1WfzsrK', 'myuser2')
+;
+
 -- question
 INSERT INTO question (subject, content, create_date, modify_date, author_id) VALUES
 ('what is sbb.', 'I want to know sbb.', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(),1),
@@ -16,10 +22,4 @@ INSERT INTO question (subject, content, create_date, modify_date, author_id) VAL
 -- answer
 INSERT INTO answer (question_q_id, content, create_date, modify_date, author_id) VALUES
 (1, 'sbb is a simple basic board', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 2)
-;
-
--- site_user
-INSERT INTO site_user (id, email, password, username) VALUES
-(1, 'wooheaven79@gmail.com', '$2a$10$fxFuRMuVNvSWiehZd1IW9.zXHdSi3riSIyHBsO0SXa.pmU1WfzsrK', 'myuser'),
-(2, 'wooheaven85@gmail.com', '$2a$10$fxFuRMuVNvSWiehZd1IW9.zXHdSi3riSIyHBsO0SXa.pmU1WfzsrK', 'myuser2')
 ;
