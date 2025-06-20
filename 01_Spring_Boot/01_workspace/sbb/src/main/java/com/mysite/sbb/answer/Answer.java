@@ -1,16 +1,12 @@
 package com.mysite.sbb.answer;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import com.mysite.sbb.question.Question;
 
 import com.mysite.sbb.user.SiteUser;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,13 +15,13 @@ import lombok.Setter;
 @Entity
 public class Answer {
     @Id
-    @Column(name = "a_id")
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    
+    private Integer answerId;
+
     @Column(columnDefinition = "TEXT")
     private String content;
-    
+
     private LocalDateTime createDate;
 
     private LocalDateTime modifyDate;
@@ -35,4 +31,7 @@ public class Answer {
 
     @ManyToOne
     private SiteUser author;
+
+    @ManyToMany
+    Set<SiteUser> voter;
 }

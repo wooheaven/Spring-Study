@@ -21,7 +21,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     public Question getQuestion(Integer id) {
-        Optional<Question> question = this.questionRepository.findById(id);
+        Optional<Question> question = this.questionRepository.findByQuestionId(id);
         if (question.isPresent()) {
             return question.get();
         } else {
@@ -48,12 +48,17 @@ public class QuestionService {
     public Page<Question> getList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        sorts.add(Sort.Order.desc("id"));
+        sorts.add(Sort.Order.desc("questionId"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.questionRepository.findAll(pageable);
     }
 
     public void delete(Question question) {
         this.questionRepository.delete(question);
+    }
+
+    public void vote(Question question, SiteUser siteUser) {
+        question.getVoter().add(siteUser);
+        this.questionRepository.save(question);
     }
 }

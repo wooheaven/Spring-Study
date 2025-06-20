@@ -2,6 +2,7 @@ package com.mysite.sbb.question;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import com.mysite.sbb.answer.Answer;
 
@@ -15,9 +16,9 @@ import lombok.Setter;
 @Entity
 public class Question {
     @Id
-    @Column(name = "q_id")
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer questionId;
     
     @Column(length = 200)
     private String subject;
@@ -34,4 +35,7 @@ public class Question {
 
     @ManyToOne
     private SiteUser author;
+
+    @ManyToMany
+    Set<SiteUser> voter;
 }

@@ -42,7 +42,7 @@ class SbbApplicationTests {
     @Test
     void testJpaFindById() {
         Integer lastId = null;
-        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByQuestionIdDesc();
         if (oq1.isPresent()) {
             Question q1 = oq1.get();
             lastId = q1.getId();
@@ -63,7 +63,7 @@ class SbbApplicationTests {
     @Test
     void testJpaFindBySubjectAndContent() {
         Integer lastId = null;
-        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByQuestionIdDesc();
         if (oq1.isPresent()) {
             Question q1 = oq1.get();
             lastId = q1.getId();
@@ -85,7 +85,7 @@ class SbbApplicationTests {
     @Test
     void testJpaSave() {
         Integer lastId = null;
-        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByQuestionIdDesc();
         String newSubject = "Spring Boot Model 질문입니다.";
         if (oq1.isPresent()) {
             Question q1 = oq1.get();
@@ -111,7 +111,7 @@ class SbbApplicationTests {
         long count = this.questionRepository.count();
         System.out.println(count);
         Integer lastId = null;
-        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByIdDesc();
+        Optional<Question> oq1=  this.questionRepository.findFirstByOrderByQuestionIdDesc();
         if (oq1.isPresent()) {
             Question q2 = oq1.get();
             lastId = q2.getId();

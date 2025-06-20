@@ -27,7 +27,7 @@ public class AnswerService {
     }
 
     public Answer getAnswer(Integer id) {
-        Optional<Answer> answer = this.answerRepository.findById(id);
+        Optional<Answer> answer = this.answerRepository.findByAnswerId(id);
         if (answer.isPresent()) {
             return answer.get();
         } else {

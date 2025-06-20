@@ -18,11 +18,16 @@
                     </div>
                 </div>
                 <div class="my-3">
-                    <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-sm btn-outline-secondary"
+                    <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
+                       th:data-uri="@{|/question/vote/${question.questionId}|}">
+                        추천
+                        <span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}"></span>
+                    </a>
+                    <a th:href="@{|/question/modify/${question.questionId}|}" class="btn btn-sm btn-outline-secondary"
                        sec:authorize="isAuthenticated()"
                        th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                        th:text="수정"></a>
-                    <a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.id}|}"
+                    <a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.questionId}|}"
                        class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
                        th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                        th:text="삭제"></a>
@@ -48,11 +53,11 @@
                     </div>
                 </div>
                 <div class="my-3">
-                    <a th:href="@{|/answer/modify/${answer.id}|}" class="btn btn-sm btn-outline-secondary"
+                    <a th:href="@{|/answer/modify/${answer.answerId}|}" class="btn btn-sm btn-outline-secondary"
                        sec:authorize="isAuthenticated()"
                        th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                        th:text="수정"></a>
-                    <a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
+                    <a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.answerId}|}"
                        class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
                        th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                        th:text="삭제"></a>
@@ -61,7 +66,7 @@
         </div>
         <!-- 답변 반복 끝  -->
         <!-- 답변 작성 -->
-        <form th:action="@{|/answer/create/${question.id}|}" method="post" class="my-3">
+        <form th:action="@{|/answer/create/${question.questionId}|}" method="post" class="my-3">
             <textarea sec:authorize="isAnonymous()" disabled name="content" id="content" rows="10" class="form-control"></textarea>
             <textarea sec:authorize="isAuthenticated()" name="content" id="content" rows="10" class="form-control"></textarea>
             <input type="submit" value="답변등록" class="btn btn-primary my-2">
@@ -73,6 +78,14 @@
         Array.from(delete_elements).forEach(function(element) {
             element.addEventListener('click', function() {
                 if(confirm("정말로 삭제하시겠습니까?")) {
+                    location.href = this.dataset.uri;
+                };
+            });
+        });
+        const recommend_elements = document.getElementsByClassName("recommend");
+        Array.from(recommend_elements).forEach(function(element) {
+            element.addEventListener('click', function() {
+                if(confirm("정말로 추천하시겠습니까?")) {
                     location.href = this.dataset.uri;
                 };
             });
