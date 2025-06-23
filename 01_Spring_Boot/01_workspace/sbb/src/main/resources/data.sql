@@ -22,5 +22,14 @@ INSERT INTO question (subject, content, create_date, modify_date, author_id) VAL
 
 -- answer
 INSERT INTO answer (question_question_id, content, create_date, modify_date, author_id) VALUES
-(1, 'sbb is a simple basic board', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 2)
+(1, 'sbb is a simple basic board 1', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 2),
+(1, 'sbb is a spring basic board 2', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 3),
+(1, 'sbb is a simple basic board 3', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 2),
+(1, 'sbb is a spring basic board 4', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 3),
+(1, 'sbb is a simple basic board 5', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 2),
+(1, 'sbb is a spring basic board 6', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 3),
+(1, 'sbb is a simple basic board 7', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 2),
+(1, 'sbb is a spring basic board 8', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 3),
+(1, 'sbb is a simple basic board 9', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 2),
+(1, 'sbb is a spring basic board 10', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 3)
 ;
